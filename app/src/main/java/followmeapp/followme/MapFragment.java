@@ -38,6 +38,9 @@ import followmeapp.followme.R;
 public class MapFragment extends Fragment {
     MapView mMapView;
     private GoogleMap googleMap;
+    private static final long MINIMUM_DISTANCECHANGE_FOR_UPDATE = 1; // in Meters
+    private static final long MINIMUM_TIME_BETWEEN_UPDATE = 1000; // in Milliseconds
+    private static final long ZOOM_IN_DEFAULT = 17;
     public static MapFragment newInstance(String param1, String param2) {
         MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
@@ -84,7 +87,7 @@ public class MapFragment extends Fragment {
         }
         //googleMap.addPolyline(new PolylineOptions().color(Color.CYAN).add(myLocation).add(new LatLng(latitude+1,longitude+1)).width(5).visible(true));
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(myLocation).zoom(17).build();
+                .target(myLocation).zoom(ZOOM_IN_DEFAULT).build();
         googleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
 
@@ -93,9 +96,9 @@ public class MapFragment extends Fragment {
             @Override
             public void onLocationChanged(Location location) {
                 LatLng currentLocation = new LatLng(location.getLatitude(),location.getLongitude());
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLocation, 17);
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLocation, ZOOM_IN_DEFAULT);
                 googleMap.animateCamera(cameraUpdate);
-                if (Route.is_started()){
+                if (Route.is_started()&&location.getAccuracy()<=10){
                     PolylineOptions polylineOptions = Route.polylineOptions;
                     polylineOptions.add(currentLocation);
                     googleMap.clear();
@@ -118,8 +121,8 @@ public class MapFragment extends Fragment {
 
             }
         };
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,1,listener);
-        locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,1000,1,listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,MINIMUM_TIME_BETWEEN_UPDATE,MINIMUM_DISTANCECHANGE_FOR_UPDATE,listener);
+        locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,MINIMUM_TIME_BETWEEN_UPDATE,MINIMUM_DISTANCECHANGE_FOR_UPDATE,listener);
 
         // Perform any camera updates here
         return v;
