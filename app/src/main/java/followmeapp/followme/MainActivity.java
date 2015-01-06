@@ -1,8 +1,11 @@
 package followmeapp.followme;
 
-import java.lang.CharSequence;import java.lang.Override;import java.lang.String;import java.util.Locale;
+import java.lang.CharSequence;import java.lang.Override;import java.lang.String;
+import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -16,10 +19,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
+    RoutesFragment userRoutes;
+    FriendsFragment userFriends;
 
+
+    /***********************************************************************/
     public void onStartRouting(View view){
         if (!Route.is_started()) {
             Route.start_routing();
@@ -47,6 +55,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /***************************************************************************/
+        userFriends = new FriendsFragment();
+        userRoutes = new RoutesFragment();
+
+        /*************************** Tabs Code ************************************/
         // Set up the action bar.
         final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(android.support.v7.app.ActionBar.NAVIGATION_MODE_TABS);
@@ -144,9 +157,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 case 0:
                     return MapFragment.newInstance(null,null);
                 case 1:
-                    return new RoutesFragment();
+                    return userRoutes;
                 case 2:
-                    return new RoutesFragment();
+                    return userFriends;
             }
             return null;
         }
