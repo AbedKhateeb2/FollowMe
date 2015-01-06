@@ -640,12 +640,18 @@ public class LoginButton extends Button {
             setButtonText();
         }
     }
-    
+
+
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (!nuxChecked && nuxMode != ToolTipMode.NEVER_DISPLAY && !isInEditMode()) {
+        if (isInEditMode()) {
+            return;
+        }
+
+        if (!nuxChecked && nuxMode != ToolTipMode.NEVER_DISPLAY) {
             nuxChecked = true;
             checkNuxSettings();
         }

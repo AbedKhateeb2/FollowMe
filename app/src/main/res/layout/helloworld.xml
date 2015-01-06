@@ -12,4 +12,13 @@
         android:id="@+id/textView"
         android:layout_gravity="center_horizontal"
         android:layout_weight="0.04" />
+
+    <com.facebook.widget.LoginButton
+        android:id="@+id/authButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        />
+
 </LinearLayout>
