@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -13,11 +13,11 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:id="@+id/button"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/play_icon"
+        android:layout_gravity="center|bottom"
+        android:src="@drawable/play"
         android:scaleType="fitXY"
-        android:onClick="onStartRouting"
         />
-
-</RelativeLayout>
+    <include
+        android:id="@+id/info_frame"
+        layout="@layout/information_xml"/>
+</FrameLayout>

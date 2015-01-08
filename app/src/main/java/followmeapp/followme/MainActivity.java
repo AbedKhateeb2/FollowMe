@@ -19,22 +19,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.GridLayout;
 import android.widget.ListView;
 
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
     RoutesFragment userRoutes;
     FriendsFragment userFriends;
-
-
-    /***********************************************************************/
-    public void onStartRouting(View view){
-        if (!Route.is_started()) {
-            Route.start_routing();
-        }else{
-            Route.stop_routing();
-        }
-    }
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
