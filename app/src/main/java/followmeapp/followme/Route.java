@@ -36,7 +36,7 @@ public class Route {
         if (lastPoint!=null){
             float[] results = new float[1];
             Location.distanceBetween(lastPoint.latitude,lastPoint.longitude,currentLocation.latitude,currentLocation.longitude,results);
-            distance += results[0];
+            distance += (results[0]/1000);
         }
         lastPoint = new LatLng(currentLocation.latitude,currentLocation.longitude);
         polylineOptions.add(currentLocation);

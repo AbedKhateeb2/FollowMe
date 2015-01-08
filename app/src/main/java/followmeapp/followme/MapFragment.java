@@ -3,6 +3,7 @@ package followmeapp.followme;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -31,9 +32,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+
 import java.lang.Exception;
 import java.lang.Override;
 import java.lang.String;
+
 import followmeapp.followme.R;
 
 
@@ -49,14 +52,22 @@ public class MapFragment extends Fragment {
     private static final long MINIMUM_TIME_BETWEEN_UPDATE = 1000; // in Milliseconds
     private static final long ZOOM_IN_DEFAULT = 17;
     RelativeLayout information;
-    Animation slide_up ;
-    Animation slide_down ;
-    /***********************************************************************/
+    Animation slide_up;
+    Animation slide_down;
+    private static MapFragment instance = null;
+
+    /**
+     * *******************************************************************
+     */
     public static MapFragment newInstance(String param1, String param2) {
-        MapFragment fragment = new MapFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
+        if (instance == null) {
+            MapFragment fragment = new MapFragment();
+            Bundle args = new Bundle();
+            fragment.setArguments(args);
+            instance = fragment;
+            return fragment;
+        }
+        return instance;
     }
 
     public MapFragment() {
@@ -67,33 +78,33 @@ public class MapFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main, container,
                 false);
         final TextView speedView = (TextView) v.findViewById(R.id.textView5);
-        final TextView distanceView = (TextView) v.findViewById(R.id.textView5);
+        final TextView distanceView = (TextView) v.findViewById(R.id.textView6);
         final Chronometer mChronometer = (Chronometer) v.findViewById(R.id.chronometer);
         mMapView = (MapView) v.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
-        information = (RelativeLayout)v.findViewById(R.id.info_frame);
-//        information.setVisibility(View.INVISIBLE);
+        information = (RelativeLayout) v.findViewById(R.id.info_frame);
         slide_up = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_up);
-        slide_down = AnimationUtils.loadAnimation(getActivity(),R.anim.slide_down);
+        slide_down = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_down);
         final LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         final LocationListener listener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                LatLng currentLocation = new LatLng(location.getLatitude(),location.getLongitude());
+                LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLocation, ZOOM_IN_DEFAULT);
                 googleMap.animateCamera(cameraUpdate);
-                if (Route.is_started()&&location.getAccuracy()<=10){
-                    double total_distance=Route.add_point(currentLocation);
+                if (Route.is_started() && location.getAccuracy() <= 10) {
+                    double total_distance = Route.add_point(currentLocation);
                     googleMap.clear();
                     googleMap.addPolyline(Route.polylineOptions);
-                    distanceView.setText(" " + total_distance + " km");
-                    speedView.setText(" "+location.getSpeed() + " m/s");
+                    distanceView.setText(String.format(" %0.2lf km",total_distance));
+                    speedView.setText(" " + location.getSpeed() + " m/s");
                 }
             }
 
@@ -112,7 +123,6 @@ public class MapFragment extends Fragment {
 
             }
         };
-
         final ImageButton button = (ImageButton) v.findViewById(R.id.button);
         button.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
@@ -124,9 +134,9 @@ public class MapFragment extends Fragment {
                     button.setImageResource(R.drawable.pause);
                     information.setVisibility(View.VISIBLE);
                     information.startAnimation(slide_down);
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,MINIMUM_TIME_BETWEEN_UPDATE,MINIMUM_DISTANCECHANGE_FOR_UPDATE,listener);
-                    locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,MINIMUM_TIME_BETWEEN_UPDATE,MINIMUM_DISTANCECHANGE_FOR_UPDATE,listener);
-                }else{
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
+                    locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
+                } else {
                     Route.stop_routing();
                     mChronometer.stop();
                     mChronometer.setText(R.string.empty);
@@ -142,7 +152,7 @@ public class MapFragment extends Fragment {
         });
 
 
-    mMapView.onResume();// needed to get the map to display immediately
+        mMapView.onResume();// needed to get the map to display immediately
 
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
@@ -156,12 +166,12 @@ public class MapFragment extends Fragment {
         // latitude and longitude
         double latitude = 32.77777;
         double longitude = 35.0215;
-        Location location=googleMap.getMyLocation();
-        LatLng myLocation=null;
-        if (location!=null){
-            myLocation = new LatLng(location.getLatitude(),location.getLongitude());
-        }else{
-            myLocation = new LatLng(latitude,longitude);
+        Location location = googleMap.getMyLocation();
+        LatLng myLocation = null;
+        if (location != null) {
+            myLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        } else {
+            myLocation = new LatLng(latitude, longitude);
         }
         //googleMap.addPolyline(new PolylineOptions().color(Color.CYAN).add(myLocation).add(new LatLng(latitude+1,longitude+1)).width(5).visible(true));
         CameraPosition cameraPosition = new CameraPosition.Builder()

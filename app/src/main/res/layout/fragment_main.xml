@@ -16,6 +16,7 @@
         android:layout_gravity="center|bottom"
         android:src="@drawable/play"
         android:scaleType="fitXY"
+        android:theme="@style/AppTheme"
         />
     <include
         android:id="@+id/info_frame"
