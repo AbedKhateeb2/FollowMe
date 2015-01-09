@@ -46,3 +46,4 @@ tools:context=".MainActivity$PlaceholderFragment">
         android:background="@android:color/transparent"
         />
 </FrameLayout>
+</RelativeLayout>
