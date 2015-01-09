@@ -24,6 +24,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.GridLayout;
 import android.widget.ListView;
 
+import com.facebook.widget.LoginButton;
+
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
     RoutesFragment userRoutes;
@@ -104,7 +106,14 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_Login) {
+            // add facebook button functionality
+            LoginButton fbLoginButton = new LoginButton(this);
+            fbLoginButton.manualClick();
+            item.setTitle("Log Out");
+            return true;
+        }
+        if(id == R.id.action_About){
             return true;
         }
 
