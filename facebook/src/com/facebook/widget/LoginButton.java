@@ -884,12 +884,7 @@ public class LoginButton extends Button {
         }
     }
 
-    /*****************************************/
-    public void manualClick(){
-        View v = null;
-        listenerCallback.onClick(v);
-    }
-    /*****************************************/
+
 
     private class LoginButtonCallback implements Session.StatusCallback {
         @Override

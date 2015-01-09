@@ -5,7 +5,11 @@
     <string name="title_section1">Map</string>
     <string name="title_section2">Routes</string>
     <string name="title_section3">Friends</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="title_section4">LogIn</string>
+    <string name="title_section5">LogOut</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
     <string name="facebook_app_id">1394308830868260</string>
     <string name="timerText">Duration</string>
