@@ -39,6 +39,7 @@ import java.lang.String;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import followmeapp.followme.R;
 
@@ -64,10 +65,25 @@ public class MapFragment extends Fragment {
     private static Chronometer mChronometer;
     private static ImageButton button;
     private static LocationListener listener;
+    private static ImageButton addbutton;
 
     /**
      * *******************************************************************
      */
+    private static String encodeNumber(int num) {
+
+        StringBuffer encodeString = new StringBuffer();
+
+        while (num >= 0x20) {
+            encodeString.append((char)((0x20 | (num & 0x1f)) + 63));
+            num >>= 5;
+        }
+
+        encodeString.append((char)(num + 63));
+
+        return encodeString.toString();
+
+    }
     public void addRouteToDatabase(View view){
         GetAddressTask getAddress = new GetAddressTask(getActivity());
         if (Route.lastPoint!=null){
@@ -78,10 +94,14 @@ public class MapFragment extends Fragment {
         String length = ""+Route.distance;
         String name = "abed";
         String imageURL="https://maps.googleapis.com/maps/api/staticmap?size=400x250&path=weight:5%7Ccolor:blue%7Cenc:";
-
+        List<LatLng> points = Route.polylineOptions.getPoints();
+        for (LatLng point:points){
+            imageURL+=encodeNumber((int)(point.latitude*10000));
+        }
         String type = "walking";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
         String date = sdf.format(new Date());
+        Database.addRoute(new RouteView(name,imageURL,Route.address,length,duration,type,date));
 
     }
     public static MapFragment newInstance(String param1, String param2) {
@@ -117,7 +137,13 @@ public class MapFragment extends Fragment {
         information = (RelativeLayout) v.findViewById(R.id.info_frame);
         slide_up = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_up);
         slide_down = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_down);
-
+        addbutton = (ImageButton)v.findViewById(R.id.addRouteButton);
+        addbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addRouteToDatabase(v);
+            }
+        });
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         listener = new LocationListener() {
             @Override
