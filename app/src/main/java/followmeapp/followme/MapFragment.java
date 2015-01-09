@@ -90,6 +90,7 @@ public class MapFragment extends Fragment {
             Route.address ="";
             getAddress.execute(Route.lastPoint);
         }
+        String address = "Israel";
         String duration = ""+mChronometer.getBase();
         String length = ""+Route.distance;
         String name = "abed";
@@ -101,7 +102,10 @@ public class MapFragment extends Fragment {
         String type = "walking";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
         String date = sdf.format(new Date());
-        Database.addRoute(new RouteView(name,imageURL,Route.address,length,duration,type,date));
+        if (!Route.address.isEmpty()){
+            address = Route.address;
+        }
+        Database.addRoute(new RouteView(name,imageURL,address,length,duration,type,date));
 
     }
     public static MapFragment newInstance(String param1, String param2) {

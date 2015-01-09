@@ -65,7 +65,7 @@ public class GetAddressTask extends AsyncTask<LatLng, Void, String> {
                             address.getAddressLine(0) : "",
                     address.getLocality(),
                     address.getCountryName());
-            Route.address = address.getLocality()+address.getCountryName();
+            Route.address = address.getLocality()+","+address.getCountryName();
             // Return the text
             return addressText;
         } else {
