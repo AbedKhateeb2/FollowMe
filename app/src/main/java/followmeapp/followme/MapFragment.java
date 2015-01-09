@@ -48,6 +48,7 @@ import followmeapp.followme.R;
  */
 public class MapFragment extends Fragment {
     MapView mMapView;
+    private static  DecimalFormat df = new DecimalFormat("####0.00");
     private GoogleMap googleMap;
     private static final long MINIMUM_DISTANCECHANGE_FOR_UPDATE = 1; // in Meters
     private static final long MINIMUM_TIME_BETWEEN_UPDATE = 1000; // in Milliseconds
@@ -104,7 +105,6 @@ public class MapFragment extends Fragment {
                     double total_distance = Route.add_point(currentLocation);
                     googleMap.clear();
                     googleMap.addPolyline(Route.polylineOptions);
-                    DecimalFormat df = new DecimalFormat("####0.00");
                     distanceView.setText(" "+ df.format(total_distance) +" km");
                     speedView.setText(" " + location.getSpeed() + " m/s");
                 }
