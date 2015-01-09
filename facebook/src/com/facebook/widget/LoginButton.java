@@ -884,6 +884,8 @@ public class LoginButton extends Button {
         }
     }
 
+
+
     private class LoginButtonCallback implements Session.StatusCallback {
         @Override
         public void call(Session session, SessionState state,
