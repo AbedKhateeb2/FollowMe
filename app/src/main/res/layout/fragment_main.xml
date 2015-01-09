@@ -17,8 +17,20 @@
         android:src="@drawable/play"
         android:scaleType="fitXY"
         android:theme="@style/AppTheme"
+        android:background="@android:color/transparent"
         />
+
     <include
         android:id="@+id/info_frame"
         layout="@layout/information_xml"/>
+
+    <ImageButton
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/addRouteButton"
+        android:src="@drawable/plus"
+        android:scaleType="fitXY"
+        android:layout_marginTop="400dp"
+        android:background="@android:color/transparent"
+        />
 </FrameLayout>

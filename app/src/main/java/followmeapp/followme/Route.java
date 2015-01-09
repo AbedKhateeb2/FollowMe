@@ -15,13 +15,16 @@ import com.google.android.gms.maps.model.PolylineOptions;
 public class Route {
     static PolylineOptions polylineOptions=null;
     static boolean routing_mode=false;
-    private static LatLng lastPoint =null;
-    private static double distance = 0.0;
+    static LatLng lastPoint =null;
+    static double distance = 0.0;
+    static long time =0;
+    static String address;
     static void start_routing(){
         routing_mode = true;
         polylineOptions=new PolylineOptions();
         lastPoint = null;
         distance = 0.0;
+        time=0;
         polylineOptions.color(Color.rgb(65,105,225)).width(10).visible(true);
     }
 

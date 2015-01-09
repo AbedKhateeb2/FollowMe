@@ -37,6 +37,8 @@ import java.lang.Exception;
 import java.lang.Override;
 import java.lang.String;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import followmeapp.followme.R;
 
@@ -47,20 +49,41 @@ import followmeapp.followme.R;
  * create an instance of this fragment.
  */
 public class MapFragment extends Fragment {
+    private static TextView distanceView;
+    private static LocationManager locationManager;
     MapView mMapView;
     private static  DecimalFormat df = new DecimalFormat("####0.00");
-    private GoogleMap googleMap;
+    private static GoogleMap googleMap;
     private static final long MINIMUM_DISTANCECHANGE_FOR_UPDATE = 1; // in Meters
     private static final long MINIMUM_TIME_BETWEEN_UPDATE = 1000; // in Milliseconds
     private static final long ZOOM_IN_DEFAULT = 17;
-    RelativeLayout information;
+    static RelativeLayout information;
     Animation slide_up;
-    Animation slide_down;
+    static Animation slide_down;
     private static MapFragment instance = null;
+    private static Chronometer mChronometer;
+    private static ImageButton button;
+    private static LocationListener listener;
 
     /**
      * *******************************************************************
      */
+    public void addRouteToDatabase(View view){
+        GetAddressTask getAddress = new GetAddressTask(getActivity());
+        if (Route.lastPoint!=null){
+            Route.address ="";
+            getAddress.execute(Route.lastPoint);
+        }
+        String duration = ""+mChronometer.getBase();
+        String length = ""+Route.distance;
+        String name = "abed";
+        String imageURL="https://maps.googleapis.com/maps/api/staticmap?size=400x250&path=weight:5%7Ccolor:blue%7Cenc:";
+
+        String type = "walking";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
+        String date = sdf.format(new Date());
+
+    }
     public static MapFragment newInstance(String param1, String param2) {
         if (instance == null) {
             MapFragment fragment = new MapFragment();
@@ -87,15 +110,16 @@ public class MapFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_main, container,
                 false);
         final TextView speedView = (TextView) v.findViewById(R.id.textView5);
-        final TextView distanceView = (TextView) v.findViewById(R.id.textView6);
-        final Chronometer mChronometer = (Chronometer) v.findViewById(R.id.chronometer);
+        distanceView = (TextView) v.findViewById(R.id.textView6);
+        mChronometer = (Chronometer) v.findViewById(R.id.chronometer);
         mMapView = (MapView) v.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         information = (RelativeLayout) v.findViewById(R.id.info_frame);
         slide_up = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_up);
         slide_down = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_down);
-        final LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        final LocationListener listener = new LocationListener() {
+
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        listener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
@@ -104,9 +128,14 @@ public class MapFragment extends Fragment {
                 if (Route.is_started() && location.getAccuracy() <= 10) {
                     double total_distance = Route.add_point(currentLocation);
                     googleMap.clear();
+                    Route.time=mChronometer.getBase();
                     googleMap.addPolyline(Route.polylineOptions);
                     distanceView.setText(" "+ df.format(total_distance) +" km");
                     speedView.setText(" " + location.getSpeed() + " m/s");
+                    information.setVisibility(View.VISIBLE);
+                    information.startAnimation(slide_down);
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
+                    locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
                 }
             }
 
@@ -125,7 +154,7 @@ public class MapFragment extends Fragment {
 
             }
         };
-        final ImageButton button = (ImageButton) v.findViewById(R.id.button);
+        button = (ImageButton) v.findViewById(R.id.button);
         button.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
             public void onClick(View v) {

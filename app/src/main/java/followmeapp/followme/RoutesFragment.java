@@ -37,4 +37,5 @@ public class RoutesFragment extends Fragment {
         routesList.setAdapter(routesListAdapter);
     }
 
+
 }
