@@ -36,6 +36,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.lang.Exception;
 import java.lang.Override;
 import java.lang.String;
+import java.text.DecimalFormat;
 
 import followmeapp.followme.R;
 
@@ -103,7 +104,8 @@ public class MapFragment extends Fragment {
                     double total_distance = Route.add_point(currentLocation);
                     googleMap.clear();
                     googleMap.addPolyline(Route.polylineOptions);
-                    distanceView.setText(String.format(" %0.2lf km",total_distance));
+                    DecimalFormat df = new DecimalFormat("####0.00");
+                    distanceView.setText(" "+ df.format(total_distance) +" km");
                     speedView.setText(" " + location.getSpeed() + " m/s");
                 }
             }
