@@ -92,6 +92,7 @@ public class MainActivity extends ActionBarActivity
                 }
             });
             return ;
+
         }
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
