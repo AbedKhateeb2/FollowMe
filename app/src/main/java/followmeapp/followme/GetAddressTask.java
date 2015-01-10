@@ -44,7 +44,7 @@ public class GetAddressTask extends AsyncTask<LatLng, Void, String> {
             addresses = geocoder.getFromLocation(loc.latitude,
                     loc.longitude, 1);
         } catch (IOException e1) {
-
+            Route.address = "IO Exception trying to get address";
             return ("IO Exception trying to get address");
         } catch (IllegalArgumentException e2) {
             // Error message to post in the log
@@ -53,7 +53,7 @@ public class GetAddressTask extends AsyncTask<LatLng, Void, String> {
                     " , " +
                     Double.toString(loc.longitude) +
                     " passed to address service";
-
+            Route.address = errorString;
             return errorString;
         }
         // If the reverse geocode returned an address
@@ -69,6 +69,7 @@ public class GetAddressTask extends AsyncTask<LatLng, Void, String> {
             // Return the text
             return addressText;
         } else {
+            Route.address = "No address found";
             return "No address found";
         }
     }

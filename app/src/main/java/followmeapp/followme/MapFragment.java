@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import followmeapp.followme.R;
@@ -140,13 +142,24 @@ public class MapFragment extends Fragment {
         List<LatLng> points = Route.polylineOptions.getPoints();
         if (points == null)
         imageURL += encodeList(points);
+        Log.d("image URL",imageURL);
         String type = "Activity : Walking";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
         String date = "Date : " + sdf.format(new Date());
         if (!Route.address.isEmpty()){
             address = Route.address;
+        }else{
+            try {
+                getAddress.get();
+                address = Route.address;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
 
         }
+
         Database.addRoute(new RouteView(name,imageURL,"Area : "+address,length,duration,type,date));
 
     }
