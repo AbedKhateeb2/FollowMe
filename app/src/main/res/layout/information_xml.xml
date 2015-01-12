@@ -37,7 +37,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:paddingStart="0dp"
-        android:paddingEnd="10dp"
+        android:paddingEnd="20dp"
         android:textColor="@color/abc_primary_text_material_dark"
         android:textStyle="bold"/>
 
@@ -70,6 +70,6 @@
         android:layout_below="@id/textView4"
         android:layout_alignParentEnd="true"
         android:paddingStart="0dp"
-        android:paddingEnd="40dp"
+        android:paddingEnd="10dp"
         android:textColor="@color/abc_primary_text_material_dark"/>
 </RelativeLayout>
