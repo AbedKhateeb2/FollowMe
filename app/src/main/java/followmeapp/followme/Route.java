@@ -13,12 +13,12 @@ import com.google.android.gms.maps.model.PolylineOptions;
  * Created by abed on 12/29/2014.
  */
 public class Route {
-    static PolylineOptions polylineOptions=null;
+    static PolylineOptions polylineOptions=new PolylineOptions();
     static boolean routing_mode=false;
     static LatLng lastPoint =null;
     static double distance = 0.0;
     static long time =0;
-    static String address;
+    static String address="";
     static void start_routing(){
         routing_mode = true;
         polylineOptions=new PolylineOptions();
