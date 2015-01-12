@@ -28,7 +28,7 @@ import android.widget.Toast;
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
-
+    private NavigatorListAdapter navAdapter;
     /**
      * Remember the position of the selected item.
      */
@@ -77,6 +77,7 @@ public class NavigationDrawerFragment extends Fragment {
 
         // Select either the default item (0) or the last selected item.
         selectItem(mCurrentSelectedPosition);
+        navAdapter = new NavigatorListAdapter(getActivity());
     }
 
     @Override
@@ -97,16 +98,9 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                        getString(R.string.title_section4)
-                }));
+
+
+        mDrawerListView.setAdapter(navAdapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
