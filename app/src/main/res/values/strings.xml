@@ -2,6 +2,13 @@
 <resources>
 
     <string name="app_name">FollowMe</string>
+    <string-array name="navigationOptions">
+        <item>Map</item>
+        <item>Routes</item>
+        <item>Friends</item>
+        <item>LogIn</item>
+        <item>LogOut</item>
+    </string-array>
     <string name="title_section1">Map</string>
     <string name="title_section2">Routes</string>
     <string name="title_section3">Friends</string>
