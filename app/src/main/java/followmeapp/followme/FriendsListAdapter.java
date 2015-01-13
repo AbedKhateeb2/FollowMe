@@ -5,7 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.facebook.widget.ProfilePictureView;
 
 /**
  * Created by salih on 1/5/2015.
@@ -18,7 +21,7 @@ public class FriendsListAdapter extends BaseAdapter {
 
     @Override
     public int getCount(){
-        return 30;
+        return Database.getFriendsSize();
     }
     @Override
     public Object getItem(int position){
@@ -40,8 +43,9 @@ public class FriendsListAdapter extends BaseAdapter {
 
             //create view holder
             fHolder = new FriendItemViewHolder();
-            fHolder.friendName = (TextView)view.findViewById(R.id.friendName);
-
+            fHolder.friendName = (TextView)view.findViewById(R.id.friend_name);
+            //fHolder.friendPic = (ImageView)view.findViewById(R.id.friend_picture);
+            fHolder.friendPic = (ProfilePictureView)view.findViewById(R.id.friend_picture);
             view.setTag(fHolder);
         }else{
             //Cast convertView to View
@@ -49,7 +53,8 @@ public class FriendsListAdapter extends BaseAdapter {
             fHolder = (FriendItemViewHolder)view.getTag();
         }
         //assign values to the view
-        fHolder.friendName.setText("Salih Boshnak");
+        fHolder.friendName.setText(Database.getFriends(position).name);
+        //fHolder.friendPic.setSrc...
 
         return view;
     }

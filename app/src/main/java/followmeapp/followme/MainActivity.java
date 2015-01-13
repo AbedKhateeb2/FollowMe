@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.pdf.PdfRenderer;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -42,6 +43,7 @@ import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
+import com.facebook.widget.ProfilePictureView;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -49,6 +51,9 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class MainActivity extends ActionBarActivity
@@ -124,6 +129,8 @@ public class MainActivity extends ActionBarActivity
                 }
                 fbs.closeAndClearTokenInformation();
                 logedIn = false;
+                Database.friendsList.clear();
+                Database.routeList.clear();
                 Toast.makeText(getApplicationContext(),"Logged In == true :D !",Toast.LENGTH_LONG).show();
             }else{
                 Toast.makeText(getApplicationContext(),"You Didn't LogIn",Toast.LENGTH_LONG).show();
@@ -145,6 +152,7 @@ public class MainActivity extends ActionBarActivity
                 Log.d("INFO", "onComplete out start");
                 if (user != null) {
                     ParseUser.getCurrentUser().put("fbId", user.getId());
+                    ParseUser.getCurrentUser().put("name", user.getName());
                     ParseUser.getCurrentUser().saveInBackground();
                     Request.executeMyFriendsRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserListCallback() {
 
@@ -168,8 +176,8 @@ public class MainActivity extends ActionBarActivity
                                     Log.d("INFO", "parse object");
                                     List<ParseObject> friendUsers = friendQuery.find();
                                     Log.d("INFO", "size : "+friendUsers.size());
-                                    Log.d("INFO", "friend : "+friendUsers.get(0));
-                                    Toast.makeText(applicationContext,"size : "+friendUsers.size(),Toast.LENGTH_LONG).show();
+                                    updateViewsWithProfileInfo(friendUsers,applicationContext);
+
                                 } catch (ParseException e) {
                                     e.printStackTrace();
                                 }
@@ -185,6 +193,37 @@ public class MainActivity extends ActionBarActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
+    }
+
+    private static void updateViewsWithProfileInfo(List<ParseObject> friendUsers,final Context ctx) {
+        Log.d("INFO", "profileInfo size = " + friendUsers.size());
+        for (ParseObject fr : friendUsers) {
+            // ParseUser currentUser = ParseUser.getCurrentUser();
+            ParseUser currentUser = (ParseUser) fr;
+            FriendView frView = new FriendView(ctx);
+            Log.d("INFO", "beforeIf");
+
+
+            if (currentUser.get("name") != null) {
+                Log.d("INFO", "in Name");
+                frView.name = currentUser.get("name").toString();
+            }
+            if (currentUser.get("fbId") != null) {
+                String facebookId = currentUser.get("fbId").toString();
+                Log.d("INFO", "setting profile picture 1");
+                frView.friendPicView.setProfileId(facebookId);
+            } else {
+                // Show the default, blank user profile picture
+                frView.friendPicView.setProfileId(null);
+                Log.d("INFO", "setting profile picture 2");
+            }
+            // Set additional UI elements
+            // ...
+            Database.addFriend(frView);
+
+
+            Log.d("INFO", "finished");
+        }
     }
 
     public void onSectionAttached(int number) {
