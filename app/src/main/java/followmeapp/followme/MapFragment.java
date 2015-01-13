@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,6 +54,8 @@ import followmeapp.followme.R;
  * create an instance of this fragment.
  */
 public class MapFragment extends Fragment {
+    static final String prefixImageURL =
+            "https://maps.googleapis.com/maps/api/staticmap?size=400x200&path=weight:5%7Ccolor:blue%7Cenc:";
     private static TextView distanceView;
     private static LocationManager locationManager;
     MapView mMapView;
@@ -69,7 +72,6 @@ public class MapFragment extends Fragment {
     private static Chronometer mChronometer;
     private static ImageButton button;
     private static LocationListener listener;
-    private static ImageButton addbutton;
 
     /**
      * *******************************************************************
@@ -124,12 +126,16 @@ public class MapFragment extends Fragment {
 
         return polyline;
     }*/
-    public void addRouteToDatabase(View view){
-        GetAddressTask getAddress = new GetAddressTask(getActivity());
-        if (Route.lastPoint!=null){
-            Route.address ="";
-            getAddress.execute(Route.lastPoint);
-        }
+    public void  dialogShow(){
+        FragmentManager fm = getFragmentManager();
+        AddRouteDialog dialog = new AddRouteDialog();
+        Bundle args = new Bundle();
+//        args.putString("title","Add Route");
+        dialog.setArguments(args);
+//        dialog.setRetainInstance(true);
+        dialog.show(fm,"Adding Route");
+    }
+    public static void addRouteToDatabase(String name, String type, GetAddressTask getAddress){
         String address = "Israel";
         long timeElapsed = SystemClock.elapsedRealtime() - mChronometer.getBase();
         String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(timeElapsed),
@@ -137,39 +143,32 @@ public class MapFragment extends Fragment {
                 TimeUnit.MILLISECONDS.toSeconds(timeElapsed) % TimeUnit.MINUTES.toSeconds(1));
         String duration = "Duration : " + hms ;
         String length = "Distance "+df.format(Route.distance) +" KM";
-        String name = "Route Name : abed";
-        String imageURL="https://maps.googleapis.com/maps/api/staticmap?size=200x100&path=weight:5%7Ccolor:blue%7Cenc:";
+        String imageURL=prefixImageURL;
         List<LatLng> points = Route.polylineOptions.getPoints();
-        if (points == null)
-        imageURL += encodeList(points);
-        Log.d("image URL",imageURL);
-        String type = "Activity : Walking";
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
-        String date = "Date : " + sdf.format(new Date());
-        if (!Route.address.isEmpty()){
-            address = Route.address;
-        }else{
-            try {
-                getAddress.get();
-                address = Route.address;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-
+        if (points != null) {
+            imageURL += encodeList(points);
         }
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
+        String date = "Date : " + sdf.format(new Date());
+        try {
+            getAddress.get();
+            address = Route.address;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
         Database.addRoute(new RouteView(name,imageURL,"Area : "+address,length,duration,type,date));
 
     }
 
-    private String encodeList(List<LatLng> points) {
-        StringBuffer encodedPoints = new StringBuffer();
+    private static String encodeList(List<LatLng> points) {
+        StringBuilder encodedPoints = new StringBuilder();
         int prev_lat = 0, prev_lng = 0;
         for (LatLng point:points) {
-            int lat = new Double(point.latitude*100000).intValue();
-            int lng = new Double(point.longitude*100000).intValue();
+            int lat = Double.valueOf(point.latitude * 100000).intValue();
+            int lng = Double.valueOf(point.longitude * 100000).intValue();
             encodedPoints.append(encodeNumber(lat - prev_lat));
             encodedPoints.append(encodeNumber(lng - prev_lng));
             prev_lat = lat;
@@ -211,13 +210,6 @@ public class MapFragment extends Fragment {
         information = (RelativeLayout) v.findViewById(R.id.info_frame);
         slide_up = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_up);
         slide_down = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_down);
-        addbutton = (ImageButton)v.findViewById(R.id.addRouteButton);
-        addbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addRouteToDatabase(v);
-            }
-        });
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         listener = new LocationListener() {
             @Override
@@ -266,9 +258,11 @@ public class MapFragment extends Fragment {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
                     locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
                 } else {
+
                     Route.stop_routing();
                     mChronometer.stop();
                     mChronometer.setText(R.string.empty);
+                    dialogShow();
                     button.setImageResource(R.drawable.play);
                     information.setVisibility(View.GONE);
                     information.startAnimation(slide_up);
