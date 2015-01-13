@@ -77,7 +77,6 @@ public class MainActivity extends ActionBarActivity
         setContentView(R.layout.activity_main);
 
         /******************************* Connect To Parse ***********************************/
-
         Parse.initialize(this, "nKW5FeyMcsHSazS0HrN07sE2HWnzqZsMkX8smWDV", "wAq9RGWWLdHfbBJKwIKC1it88YKM8lM1S7y6czrG");
         /***************************************************************************/
         userFriends = new FriendsFragment();
@@ -87,7 +86,7 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
-
+        Database.update_routes();
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
@@ -131,7 +130,7 @@ public class MainActivity extends ActionBarActivity
                 fbs.closeAndClearTokenInformation();
                 logedIn = false;
                 Database.friendsList.clear();
-                Database.routeList.clear();
+                Database.update_routes();
                 Toast.makeText(getApplicationContext(),"Logged In == true :D !",Toast.LENGTH_LONG).show();
             }else{
                 Toast.makeText(getApplicationContext(),"You Didn't LogIn",Toast.LENGTH_LONG).show();
@@ -159,6 +158,7 @@ public class MainActivity extends ActionBarActivity
 
                         @Override
                         public void onCompleted(List<GraphUser> users, Response response) {
+                            Database.update_routes();
                             Log.d("INFO", "onComplete in start");
                             if (users != null) {
                                 List<String> friendsList = new ArrayList<String>();

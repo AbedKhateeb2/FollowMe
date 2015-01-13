@@ -18,7 +18,7 @@ import java.lang.ref.WeakReference;
  * Created by salih on 12/30/2014.
  */
 public class RoutesFragment extends Fragment {
-
+    static RoutesListAdapter routesListAdapter= null;
 
     private ListView routesList;
 
@@ -33,7 +33,7 @@ public class RoutesFragment extends Fragment {
         super.onStart();
         routesList = (ListView)getView().findViewById(R.id.routesListView);
         WeakReference<Context> Mcontext = new WeakReference<Context>(getActivity());
-        RoutesListAdapter routesListAdapter = new RoutesListAdapter(Mcontext.get());
+        routesListAdapter = new RoutesListAdapter(Mcontext.get());
         routesList.setAdapter(routesListAdapter);
     }
 
