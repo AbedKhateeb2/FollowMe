@@ -60,12 +60,12 @@ public class RoutesListAdapter extends BaseAdapter {
         }
 
         RouteView routeView = Database.getRoutes(position);
-        holder.name.setText(routeView.name);
-        holder.area.setText(routeView.area);
-        holder.type.setText(routeView.type);
-        holder.duration.setText(routeView.duration);
-        holder.date.setText(routeView.date);
-        holder.length.setText(routeView.length);
+        holder.name.setText("Route Name : "+routeView.name);
+        holder.area.setText("Area : "+routeView.area);
+        holder.type.setText("Activity : "+routeView.type);
+        holder.duration.setText("Duration : " + routeView.duration);
+        holder.date.setText("Date : "+routeView.date);
+        holder.length.setText( "Distance "+routeView.length+" KM");
         Picasso.with(ctx)
                 .load(routeView.imageURL)
                 .placeholder(R.drawable.staticmap)

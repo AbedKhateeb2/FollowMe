@@ -11,7 +11,7 @@ public class RouteView {
     String duration;
     String type;
     String date;
-
+    String objectID;
     public RouteView(String name, String imageURL, String area, String length, String duration, String type, String date) {
         this.name = name;
         this.imageURL = imageURL;

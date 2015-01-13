@@ -76,6 +76,7 @@ public class MapFragment extends Fragment {
     private static Chronometer mChronometer;
     private static ImageButton button;
     private static LocationListener listener;
+    static long timeElapsed = 0;
 
     /**
      * *******************************************************************
@@ -137,29 +138,28 @@ public class MapFragment extends Fragment {
 //        args.putString("title","Add Route");
         dialog.setArguments(args);
 //        dialog.setRetainInstance(true);
+
         dialog.show(fm,"Adding Route");
     }
     public static void addRouteToDatabase(String name, String type, GetAddressTask getAddress, FragmentActivity activity){
         List<LatLng> points = Route.polylineOptions.getPoints();
-        if (points == null) {
+        if (points == null || points.size()==0) {
             getAddress.cancel(true);
-            Toast.makeText(activity,"Please Record a Route First!",Toast.LENGTH_LONG).show();
+            Toast.makeText(activity.getApplicationContext(),"Please Record a Route First!",Toast.LENGTH_LONG).show();
             return ;
         }
         String address = "Israel";
-        long timeElapsed = SystemClock.elapsedRealtime() - mChronometer.getBase();
-        String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(timeElapsed),
-                TimeUnit.MILLISECONDS.toMinutes(timeElapsed) % TimeUnit.HOURS.toMinutes(1),
-                TimeUnit.MILLISECONDS.toSeconds(timeElapsed) % TimeUnit.MINUTES.toSeconds(1));
-        String duration = "Duration : " + hms ;
-        String length = "Distance "+df.format(Route.distance) +" KM";
+
+        String duration = String.format("%02d:%02d", TimeUnit.MILLISECONDS.toHours(timeElapsed),
+                TimeUnit.MILLISECONDS.toMinutes(timeElapsed) % TimeUnit.HOURS.toMinutes(1));
+        String length =df.format(Route.distance);
         String imageURL=prefixImageURL;
         if (points != null) {
             imageURL += encodeList(points);
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
-        String date = "Date : " + sdf.format(new Date());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm");
+        String date =sdf.format(new Date());
         try {
             getAddress.get();
             address = Route.address;
@@ -168,7 +168,7 @@ public class MapFragment extends Fragment {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        Database.addRoute(new RouteView(name,imageURL,"Area : "+address,length,duration,type,date));
+        Database.addRoute(new RouteView(name,imageURL,address,length,duration,type,date));
 
     }
 
@@ -270,6 +270,7 @@ public class MapFragment extends Fragment {
 
                     Route.stop_routing();
                     mChronometer.stop();
+                    timeElapsed = SystemClock.elapsedRealtime() - mChronometer.getBase();
                     mChronometer.setText(R.string.empty);
                     dialogShow();
                     button.setImageResource(R.drawable.play);
