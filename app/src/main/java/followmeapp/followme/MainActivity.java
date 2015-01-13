@@ -168,6 +168,7 @@ public class MainActivity extends ActionBarActivity
                                     Log.d("INFO", "parse object");
                                     List<ParseObject> friendUsers = friendQuery.find();
                                     Log.d("INFO", "size : "+friendUsers.size());
+                                    Log.d("INFO", "friend : "+friendUsers.get(0));
                                     Toast.makeText(applicationContext,"size : "+friendUsers.size(),Toast.LENGTH_LONG).show();
                                 } catch (ParseException e) {
                                     e.printStackTrace();
