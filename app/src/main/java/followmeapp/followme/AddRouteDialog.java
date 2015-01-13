@@ -55,7 +55,7 @@ public class AddRouteDialog extends DialogFragment {
                     AlertDialog alert11 = builder1.create();
                     alert11.show();
                 }else{
-                    MapFragment.addRouteToDatabase("Route Name : "+name.getText().toString(),"Activity : "+spinner.getSelectedItem().toString(),getAddress);
+                    MapFragment.addRouteToDatabase("Route Name : "+name.getText().toString(),"Activity : "+spinner.getSelectedItem().toString(),getAddress,getActivity());
                     AddRouteDialog.this.dismiss();
                 }
             }

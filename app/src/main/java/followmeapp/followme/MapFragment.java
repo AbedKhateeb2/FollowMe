@@ -1,7 +1,9 @@
 package followmeapp.followme;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
@@ -10,6 +12,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +25,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -63,7 +67,7 @@ public class MapFragment extends Fragment {
 
     private static GoogleMap googleMap;
     private static final long MINIMUM_DISTANCECHANGE_FOR_UPDATE = 1; // in Meters
-    private static final long MINIMUM_TIME_BETWEEN_UPDATE = 1000; // in Milliseconds
+    private static final long MINIMUM_TIME_BETWEEN_UPDATE = 10000; // in Milliseconds
     private static final long ZOOM_IN_DEFAULT = 17;
     static RelativeLayout information;
     Animation slide_up;
@@ -135,7 +139,13 @@ public class MapFragment extends Fragment {
 //        dialog.setRetainInstance(true);
         dialog.show(fm,"Adding Route");
     }
-    public static void addRouteToDatabase(String name, String type, GetAddressTask getAddress){
+    public static void addRouteToDatabase(String name, String type, GetAddressTask getAddress, FragmentActivity activity){
+        List<LatLng> points = Route.polylineOptions.getPoints();
+        if (points == null) {
+            getAddress.cancel(true);
+            Toast.makeText(activity,"Please Record a Route First!",Toast.LENGTH_LONG).show();
+            return ;
+        }
         String address = "Israel";
         long timeElapsed = SystemClock.elapsedRealtime() - mChronometer.getBase();
         String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(timeElapsed),
@@ -144,7 +154,6 @@ public class MapFragment extends Fragment {
         String duration = "Duration : " + hms ;
         String length = "Distance "+df.format(Route.distance) +" KM";
         String imageURL=prefixImageURL;
-        List<LatLng> points = Route.polylineOptions.getPoints();
         if (points != null) {
             imageURL += encodeList(points);
         }
@@ -296,7 +305,7 @@ public class MapFragment extends Fragment {
         } else {
             myLocation = new LatLng(latitude, longitude);
         }
-        //googleMap.addPolyline(new PolylineOptions().color(Color.CYAN).add(myLocation).add(new LatLng(latitude+1,longitude+1)).width(5).visible(true));
+//        googleMap.addPolyline(new PolylineOptions().color(Color.CYAN).add(myLocation).add(new LatLng(latitude+1,longitude+1)).width(5).visible(true));
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(myLocation).zoom(ZOOM_IN_DEFAULT).build();
         googleMap.animateCamera(CameraUpdateFactory
