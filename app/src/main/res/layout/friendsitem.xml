@@ -1,17 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:facebook="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+
+
+    <com.facebook.widget.ProfilePictureView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:gravity="center_horizontal"
+        android:id="@+id/friend_picture"
+        facebook:preset_size="small" />
 
 
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="18dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Salih Boshnak"
-        android:id="@+id/friendName"
-        android:layout_gravity="center_horizontal"
-     />
+        android:id="@+id/friend_name"
+        android:text="soso"
+        android:gravity="center"
+        />
 
 </LinearLayout>
