@@ -130,10 +130,10 @@ public class MapFragment extends Fragment {
         FragmentManager fm = getFragmentManager();
         AddRouteDialog dialog = new AddRouteDialog();
         Bundle args = new Bundle();
-        args.putString("title","Add Route");
+//        args.putString("title","Add Route");
         dialog.setArguments(args);
 //        dialog.setRetainInstance(true);
-        dialog.show(fm,"Add Route");
+        dialog.show(fm,"Adding Route");
     }
     public static void addRouteToDatabase(String name, String type, GetAddressTask getAddress){
         String address = "Israel";

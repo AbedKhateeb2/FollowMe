@@ -27,6 +27,7 @@
     <string name="dialog_submit">Add</string>
     <string name="dialog_route_name">Please name the Route</string>
     <string name="hello_world">Hello World</string>
+    <string name="activity_type">Please choose you activity :</string>
     <string-array name="activities">
         <item>Walk</item>
         <item>Stairs</item>

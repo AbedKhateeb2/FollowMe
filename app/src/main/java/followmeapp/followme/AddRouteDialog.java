@@ -5,7 +5,6 @@ package followmeapp.followme;
  */
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -16,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ExpandableListView;
 import android.widget.Spinner;
 
 
@@ -38,11 +36,12 @@ public class AddRouteDialog extends DialogFragment {
                 R.array.activities,android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        getDialog().setTitle("Adding Route");
         loginbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.d("name route",name.getText().toString());
-//                Log.d("activity",spinner.toString());
+                Log.d("name route",name.getText().toString());
+                Log.d("activity",spinner.getSelectedItem().toString());
                 if (name.getText().toString().isEmpty()){
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
                     builder1.setMessage("Please insert a route name");
@@ -56,8 +55,8 @@ public class AddRouteDialog extends DialogFragment {
                     AlertDialog alert11 = builder1.create();
                     alert11.show();
                 }else{
-
-                    MapFragment.addRouteToDatabase("Route Name : "+name.getText().toString(),"Activity : "+spinner.toString(),getAddress);
+                    MapFragment.addRouteToDatabase("Route Name : "+name.getText().toString(),"Activity : "+spinner.getSelectedItem().toString(),getAddress);
+                    AddRouteDialog.this.dismiss();
                 }
             }
         });
