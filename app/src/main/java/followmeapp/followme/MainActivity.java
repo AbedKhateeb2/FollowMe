@@ -2,10 +2,19 @@ package followmeapp.followme;
 
 import java.lang.CharSequence;import java.lang.Override;import java.lang.String;
 import java.lang.ref.WeakReference;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -15,6 +24,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,12 +35,19 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.GridLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 
@@ -38,6 +55,7 @@ public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     static RoutesFragment userRoutes;
     static FriendsFragment userFriends;
+    private boolean logedIn;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -58,7 +76,7 @@ public class MainActivity extends ActionBarActivity
         /***************************************************************************/
         userFriends = new FriendsFragment();
         userRoutes = new RoutesFragment();
-
+        logedIn = false;
         /*************************** Navigation Drawable Code ************************************/
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -68,37 +86,104 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
     }
-
-
-
-
-
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-
         if( position == 3){ // LOGIN
-            ParseFacebookUtils.logIn(this, new LogInCallback() {
-                @Override
-                public void done(ParseUser user, ParseException err) {
-                    if (user == null) {
-                        Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
-                    } else if (user.isNew()) {
-                        Log.d("MyApp", "User signed up and logged in through Facebook!");
-                    } else {
-                        Log.d("MyApp", "User logged in through Facebook!");
+            if(logedIn == true){
+                Toast.makeText(getApplicationContext(),"You Already Logged In",Toast.LENGTH_LONG).show();
+                return ;
+            }
+            if(logedIn == false) {
+               // List<String> permissions = Arrays.asList("public_profile", "user_friends");
+                ParseFacebookUtils.logIn(this, new LogInCallback() {
+                    @Override
+                    public void done(ParseUser user, ParseException error) {
+                        Log.d("INFO", "in done");
+                        // When your user logs in, immediately get and store its Facebook ID
+                        if (user != null) {
+                            logedIn = true;
+                             getFacebookIdInBackground(getApplicationContext());
+                            Log.d("INFO", user.getUsername());
+                        }
                     }
-                }
-            });
-            return ;
+                });
 
+            }
+            return ;
+        }
+        if(position == 4){//Logout
+            if(logedIn == true){
+                ParseUser.logOut();
+                Session fbs = Session.getActiveSession();
+                if (fbs ==null){
+                    fbs = new Session(getApplicationContext());
+                    Session.setActiveSession(fbs);
+                }
+                fbs.closeAndClearTokenInformation();
+                logedIn = false;
+                Toast.makeText(getApplicationContext(),"Logged In == true :D !",Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(getApplicationContext(),"You Didn't LogIn",Toast.LENGTH_LONG).show();
+            }
+            return ;
         }
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
+    }
+
+
+    private static void getFacebookIdInBackground(final Context applicationContext) {
+        Request.executeMeRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
+            @Override
+            public void onCompleted(GraphUser user, Response response) {
+                Log.d("INFO", "onComplete out start");
+                if (user != null) {
+                    ParseUser.getCurrentUser().put("fbId", user.getId());
+                    ParseUser.getCurrentUser().saveInBackground();
+                    Request.executeMyFriendsRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserListCallback() {
+
+                        @Override
+                        public void onCompleted(List<GraphUser> users, Response response) {
+                            Log.d("INFO", "onComplete in start");
+                            if (users != null) {
+                                List<String> friendsList = new ArrayList<String>();
+                                for (GraphUser user : users) {
+                                    friendsList.add(user.getId());
+                                }
+
+                                // Construct a ParseUser query that will find friends whose
+                                // facebook IDs are contained in the current user's friend list.
+                                ParseQuery friendQuery = ParseQuery.getUserQuery();
+                                friendQuery.whereContainedIn("fbId", friendsList);
+
+                                // findObjects will return a list of ParseUsers that are friends with
+                                // the current user
+                                try {
+                                    Log.d("INFO", "parse object");
+                                    List<ParseObject> friendUsers = friendQuery.find();
+                                    Log.d("INFO", "size : "+friendUsers.size());
+                                    Toast.makeText(applicationContext,"size : "+friendUsers.size(),Toast.LENGTH_LONG).show();
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
     }
 
     public void onSectionAttached(int number) {
