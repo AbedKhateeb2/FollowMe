@@ -12,7 +12,7 @@ public class RouteView {
     String type;
     String date;
     String objectID;
-    public RouteView(String name, String imageURL, String area, String length, String duration, String type, String date) {
+    public RouteView(String name, String imageURL, String area, String length, String duration, String type, String date,String objectID) {
         this.name = name;
         this.imageURL = imageURL;
         this.area = area;
@@ -20,5 +20,6 @@ public class RouteView {
         this.duration = duration;
         this.type = type;
         this.date = date;
+        this.objectID = objectID;
     }
 }

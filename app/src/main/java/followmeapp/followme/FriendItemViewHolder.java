@@ -1,5 +1,6 @@
 package followmeapp.followme;
 
+import android.graphics.Bitmap;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -10,6 +11,6 @@ import com.facebook.widget.ProfilePictureView;
  */
 public class FriendItemViewHolder {
     public TextView friendName;
-    ProfilePictureView friendPic;
-    //public ImageView friendPic;
+    public ProfilePictureView friendPic;
+    public ImageView bitMapPic;
 }

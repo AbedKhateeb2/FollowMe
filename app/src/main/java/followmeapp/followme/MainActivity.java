@@ -15,6 +15,8 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.pdf.PdfRenderer;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -35,6 +37,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -81,7 +84,6 @@ public class MainActivity extends ActionBarActivity
         setContentView(R.layout.activity_main);
 
         /******************************* Connect To Parse ***********************************/
-
         Parse.initialize(this, "nKW5FeyMcsHSazS0HrN07sE2HWnzqZsMkX8smWDV", "wAq9RGWWLdHfbBJKwIKC1it88YKM8lM1S7y6czrG");
         ParseInstallation.getCurrentInstallation().saveInBackground();
         /***************************************************************************/
@@ -92,7 +94,7 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
-
+        Database.update_routes();
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
@@ -108,8 +110,8 @@ public class MainActivity extends ActionBarActivity
                 return ;
             }
             if(logedIn == false) {
-               // List<String> permissions = Arrays.asList("public_profile", "user_friends");
-                ParseFacebookUtils.logIn(this, new LogInCallback() {
+                List<String> permissions = Arrays.asList("public_profile", "user_friends");
+                ParseFacebookUtils.logIn(permissions,this, new LogInCallback() {
                     @Override
                     public void done(ParseUser user, ParseException error) {
                         Log.d("INFO", "in done");
@@ -140,7 +142,7 @@ public class MainActivity extends ActionBarActivity
                 fbs.closeAndClearTokenInformation();
                 logedIn = false;
                 Database.friendsList.clear();
-                Database.routeList.clear();
+                Database.update_routes();
                 Toast.makeText(getApplicationContext(),"Logged In == true :D !",Toast.LENGTH_LONG).show();
             }else{
                 Toast.makeText(getApplicationContext(),"You Didn't LogIn",Toast.LENGTH_LONG).show();
@@ -172,10 +174,12 @@ public class MainActivity extends ActionBarActivity
 
                         @Override
                         public void onCompleted(List<GraphUser> users, Response response) {
+                            Database.update_routes();
                             Log.d("INFO", "onComplete in start");
                             if (users != null) {
                                 List<String> friendsList = new ArrayList<String>();
                                 for (GraphUser user : users) {
+                                    Log.d("FB",user.getId());
                                     friendsList.add(user.getId());
                                 }
 
@@ -214,18 +218,29 @@ public class MainActivity extends ActionBarActivity
         for (ParseObject fr : friendUsers) {
             // ParseUser currentUser = ParseUser.getCurrentUser();
             ParseUser currentUser = (ParseUser) fr;
-            FriendView frView = new FriendView(ctx);
+            FriendView frView = null;
             Log.d("INFO", "beforeIf");
 
 
             if (currentUser.get("name") != null) {
                 Log.d("INFO", "in Name");
+                frView = new FriendView(ctx);
                 frView.name = currentUser.get("name").toString();
             }
             if (currentUser.get("fbId") != null) {
                 String facebookId = currentUser.get("fbId").toString();
                 Log.d("INFO", "setting profile picture 1");
-                frView.friendPicView.setProfileId(facebookId);
+                Log.d("INFO", "facebook Id "+facebookId);
+                frView.fbId =  facebookId;
+                //frView.friendPicView.setProfileId(facebookId);
+               // frView.friendPicView.setCropped(true);
+               // ImageView fbImage = ( ( ImageView)frView.friendPicView.getChildAt(0));
+               // frView.bitMapPic  = ( (BitmapDrawable) fbImage.getDrawable()).getBitmap();
+
+
+//                frView.friendPicView.setDrawingCacheEnabled(true);
+//                frView.friendPicView.setProfileId(facebookId);
+//                frView.bitMapPic = frView.friendPicView.getDrawingCache();
             } else {
                 // Show the default, blank user profile picture
                 frView.friendPicView.setProfileId(null);

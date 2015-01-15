@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.parse.ParseUser;
 
 import java.lang.Exception;
 import java.lang.Override;
@@ -63,7 +64,7 @@ public class MapFragment extends Fragment {
     private static TextView distanceView;
     private static LocationManager locationManager;
     MapView mMapView;
-    private static  DecimalFormat df = new DecimalFormat("####0.00");
+    private static DecimalFormat df = new DecimalFormat("####0.00");
 
     private static GoogleMap googleMap;
     private static final long MINIMUM_DISTANCECHANGE_FOR_UPDATE = 1; // in Meters
@@ -90,48 +91,63 @@ public class MapFragment extends Fragment {
         StringBuffer encodeString = new StringBuffer();
 
         while (num >= 0x20) {
-            encodeString.append((char)((0x20 | (num & 0x1f)) + 63));
+            encodeString.append((char) ((0x20 | (num & 0x1f)) + 63));
             num >>= 5;
         }
 
-        encodeString.append((char)(num + 63));
+        encodeString.append((char) (num + 63));
 
         return encodeString.toString();
 
     }
-   /* public static ArrayList<GeoPoint> decode(String encodedString, int precision) {
-        ArrayList<GeoPoint> polyline = new ArrayList<GeoPoint>();
-        int index = 0;
-        int len = encodedString.length();
-        int lat = 0, lng = 0;
 
-        while (index < len) {
-            int b, shift = 0, result = 0;
-            do {
-                b = encodedString.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lat += dlat;
+    /* public static ArrayList<GeoPoint> decode(String encodedString, int precision) {
+         ArrayList<GeoPoint> polyline = new ArrayList<GeoPoint>();
+         int index = 0;
+         int len = encodedString.length();
+         int lat = 0, lng = 0;
 
-            shift = 0;
-            result = 0;
-            do {
-                b = encodedString.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lng += dlng;
+         while (index < len) {
+             int b, shift = 0, result = 0;
+             do {
+                 b = encodedString.charAt(index++) - 63;
+                 result |= (b & 0x1f) << shift;
+                 shift += 5;
+             } while (b >= 0x20);
+             int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+             lat += dlat;
 
-            GeoPoint p = new GeoPoint(lat*precision, lng*precision);
-            polyline.add(p);
+             shift = 0;
+             result = 0;
+             do {
+                 b = encodedString.charAt(index++) - 63;
+                 result |= (b & 0x1f) << shift;
+                 shift += 5;
+             } while (b >= 0x20);
+             int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+             lng += dlng;
+
+             GeoPoint p = new GeoPoint(lat*precision, lng*precision);
+             polyline.add(p);
+         }
+
+         return polyline;
+     }*/
+    public void dialogShow() {
+        if (ParseUser.getCurrentUser() == null) {
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+            builder1.setMessage("Please Login before");
+            builder1.setCancelable(false);
+            builder1.setPositiveButton("OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert11 = builder1.create();
+            alert11.show();
+            return;
         }
-
-        return polyline;
-    }*/
-    public void  dialogShow(){
         FragmentManager fm = getFragmentManager();
         AddRouteDialog dialog = new AddRouteDialog();
         Bundle args = new Bundle();
@@ -139,27 +155,28 @@ public class MapFragment extends Fragment {
         dialog.setArguments(args);
 //        dialog.setRetainInstance(true);
 
-        dialog.show(fm,"Adding Route");
+        dialog.show(fm, "Adding Route");
     }
-    public static void addRouteToDatabase(String name, String type, GetAddressTask getAddress, FragmentActivity activity){
+
+    public static void addRouteToDatabase(String name, String type, GetAddressTask getAddress, FragmentActivity activity) {
         List<LatLng> points = Route.polylineOptions.getPoints();
-        if (points == null || points.size()==0) {
+        if (points == null || points.size() == 0) {
             getAddress.cancel(true);
-            Toast.makeText(activity.getApplicationContext(),"Please Record a Route First!",Toast.LENGTH_LONG).show();
-            return ;
+            Toast.makeText(activity.getApplicationContext(), "Please Record a Route First!", Toast.LENGTH_LONG).show();
+            return;
         }
         String address = "Israel";
 
         String duration = String.format("%02d:%02d", TimeUnit.MILLISECONDS.toHours(timeElapsed),
                 TimeUnit.MILLISECONDS.toMinutes(timeElapsed) % TimeUnit.HOURS.toMinutes(1));
-        String length =df.format(Route.distance);
-        String imageURL=prefixImageURL;
+        String length = df.format(Route.distance);
+        String imageURL = prefixImageURL;
         if (points != null) {
             imageURL += encodeList(points);
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm");
-        String date =sdf.format(new Date());
+        String date = sdf.format(new Date());
         try {
             getAddress.get();
             address = Route.address;
@@ -168,14 +185,14 @@ public class MapFragment extends Fragment {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        Database.addRoute(new RouteView(name,imageURL,address,length,duration,type,date));
+        Database.addRoute(new RouteView(name, imageURL, address, length, duration, type, date, null));
 
     }
 
     private static String encodeList(List<LatLng> points) {
         StringBuilder encodedPoints = new StringBuilder();
         int prev_lat = 0, prev_lng = 0;
-        for (LatLng point:points) {
+        for (LatLng point : points) {
             int lat = Double.valueOf(point.latitude * 100000).intValue();
             int lng = Double.valueOf(point.longitude * 100000).intValue();
             encodedPoints.append(encodeNumber(lat - prev_lat));
@@ -229,9 +246,9 @@ public class MapFragment extends Fragment {
                 if (Route.is_started() && location.getAccuracy() <= 10) {
                     double total_distance = Route.add_point(currentLocation);
                     googleMap.clear();
-                    Route.time=mChronometer.getBase();
+                    Route.time = mChronometer.getBase();
                     googleMap.addPolyline(Route.polylineOptions);
-                    distanceView.setText(" "+ df.format(total_distance) +" km");
+                    distanceView.setText(" " + df.format(total_distance) + " km");
                     speedView.setText(" " + location.getSpeed() + " m/s");
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
                     locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
