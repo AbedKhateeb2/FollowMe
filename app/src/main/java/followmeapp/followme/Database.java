@@ -12,8 +12,8 @@ import java.util.List;
  * Created by abed on 1/9/2015.
  */
 public class Database {
-     static String currentUserFbId;
-    static String deviceId;
+     static public String currentUserFbId;
+    static public String deviceId;
      static List<RouteView> routeList = new LinkedList<>();
      static List<FriendView> friendsList = new LinkedList<>();
      static public RouteView getRoutes(int position){

@@ -122,8 +122,8 @@ public class MainActivity extends ActionBarActivity
                             Log.d("INFO", user.getUsername());
                                                 /*Mohammad*/
                             ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-                            //installation.put("ser",user.getUsername());
-                            installation.put("User",ParseUser.getCurrentUser());
+                            installation.put("fbUserId",Database.currentUserFbId);
+                            Database.deviceId = installation.getInstallationId();
                             installation.saveInBackground();
                         }
                     }
@@ -167,6 +167,7 @@ public class MainActivity extends ActionBarActivity
             public void onCompleted(GraphUser user, Response response) {
                 Log.d("INFO", "onComplete out start");
                 if (user != null) {
+                    Database.currentUserFbId = user.getId();
                     ParseUser.getCurrentUser().put("fbId", user.getId());
                     ParseUser.getCurrentUser().put("name", user.getName());
                     ParseUser.getCurrentUser().saveInBackground();
