@@ -10,8 +10,10 @@ import java.util.List;
  * Created by abed on 1/9/2015.
  */
 public class Database {
+     static String currentUserFbId;
+    static String deviceId;
      static List<RouteView> routeList = new LinkedList<>();
-    static List<FriendView> friendsList = new LinkedList<>();
+     static List<FriendView> friendsList = new LinkedList<>();
      static public RouteView getRoutes(int position){
          return routeList.get(position);
      }
@@ -32,6 +34,7 @@ public class Database {
     static public int getFriendsSize(){
         return friendsList.size();
     }
+
     public static void addRoute(RouteView routeView) {
         ParseObject routeObject = new ParseObject("Route");
         routeObject.put("route_name",routeView.name);

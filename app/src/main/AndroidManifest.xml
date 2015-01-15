@@ -31,5 +31,8 @@
          Google Maps Android API v2, but are recommended. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!-- The following permission is required for the push notifications -->
+    <meta-data android:name="com.parse.push.notification_icon" android:resource="@drawable/push_icon"/>
+
 
 </manifest>

@@ -51,6 +51,10 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.ParseAnalytics;
+import com.parse.ParseInstallation;
+import com.parse.RefreshCallback;
+import com.parse.SaveCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -79,6 +83,7 @@ public class MainActivity extends ActionBarActivity
         /******************************* Connect To Parse ***********************************/
 
         Parse.initialize(this, "nKW5FeyMcsHSazS0HrN07sE2HWnzqZsMkX8smWDV", "wAq9RGWWLdHfbBJKwIKC1it88YKM8lM1S7y6czrG");
+        ParseInstallation.getCurrentInstallation().saveInBackground();
         /***************************************************************************/
         userFriends = new FriendsFragment();
         userRoutes = new RoutesFragment();
@@ -113,10 +118,14 @@ public class MainActivity extends ActionBarActivity
                             logedIn = true;
                              getFacebookIdInBackground(getApplicationContext());
                             Log.d("INFO", user.getUsername());
+                                                /*Mohammad*/
+                            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+                            //installation.put("ser",user.getUsername());
+                            installation.put("User",ParseUser.getCurrentUser());
+                            installation.saveInBackground();
                         }
                     }
                 });
-
             }
             return ;
         }
@@ -145,6 +154,10 @@ public class MainActivity extends ActionBarActivity
                 .commit();
     }
 
+
+    public void OnShare() {
+        
+    }
 
     private static void getFacebookIdInBackground(final Context applicationContext) {
         Request.executeMeRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {

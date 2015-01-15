@@ -51,7 +51,7 @@ public class RoutesListAdapter extends BaseAdapter {
             holder.duration = (TextView)view.findViewById(R.id.txtDuration);
             holder.length = (TextView)view.findViewById(R.id.txtLength);
             holder.map = (ImageView)view.findViewById(R.id.mapImage);
-
+            holder.shareButton = (TextView)view.findViewById(R.id.txtShare);
             view.setTag(holder);
         }else{
             //Cast convertView to View
@@ -59,13 +59,20 @@ public class RoutesListAdapter extends BaseAdapter {
             holder = (RoutesHolder)view.getTag();
         }
 
-        RouteView routeView = Database.getRoutes(position);
+        final RouteView routeView = Database.getRoutes(position);
         holder.name.setText("Route Name : "+routeView.name);
         holder.area.setText("Area : "+routeView.area);
         holder.type.setText("Activity : "+routeView.type);
         holder.duration.setText("Duration : " + routeView.duration);
         holder.date.setText("Date : "+routeView.date);
         holder.length.setText( "Distance "+routeView.length+" KM");
+        holder.shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String routeID = routeView.objectID;
+
+            }
+        });
         Picasso.with(ctx)
                 .load(routeView.imageURL)
                 .placeholder(R.drawable.staticmap)
@@ -81,6 +88,7 @@ public class RoutesListAdapter extends BaseAdapter {
         public TextView duration;
         public TextView type;
         public TextView date;
+        public TextView shareButton;
     }
 
 }
