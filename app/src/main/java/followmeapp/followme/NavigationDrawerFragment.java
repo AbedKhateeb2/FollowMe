@@ -80,6 +80,21 @@ public class NavigationDrawerFragment extends Fragment {
         navAdapter = new NavigatorListAdapter(getActivity());
     }
 
+    public void lockDrawer(){
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+
+    public void unLockDrawer(){
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+    }
+    /*
+    *  to = true change to logIn
+    *  to = fasle change to logout
+    * */
+    public void changeLogInOutText(boolean to){
+        navAdapter.toLogin = to;
+        navAdapter.notifyDataSetChanged();
+    }
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -45,8 +46,7 @@ public class FriendsListAdapter extends BaseAdapter {
             fHolder = new FriendItemViewHolder();
             fHolder.friendName = (TextView)view.findViewById(R.id.friend_name);
             fHolder.friendPic = (ProfilePictureView)view.findViewById(R.id.friend_picture);
-           // fHolder.bitMapPic = (ImageView)view.findViewById(R.id.friend_image);
-
+            fHolder.check = (CheckBox)view.findViewById(R.id.check_box);
             view.setTag(fHolder);
         }else{
             //Cast convertView to View
@@ -55,10 +55,12 @@ public class FriendsListAdapter extends BaseAdapter {
         }
         //assign values to the view
         fHolder.friendName.setText(Database.getFriends(position).name);
-        //fHolder.bitMapPic.setImageBitmap(Database.getFriends(position).bitMapPic);
-        //fHolder.friendPic = new ProfilePictureView(ctx);
         fHolder.friendPic.setProfileId(Database.getFriends(position).fbId);
+        fHolder.check.setVisibility(CheckBox.INVISIBLE);
+        if(Database.fromShare){
+            fHolder.check.setVisibility(CheckBox.VISIBLE);
+            fHolder.check.setChecked(false);
+        }
         return view;
     }
-
 }

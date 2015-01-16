@@ -1,6 +1,7 @@
 package followmeapp.followme;
 
 import android.content.Context;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,6 +71,11 @@ public class RoutesListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 String routeID = routeView.objectID;
+                Database.fromShare = true;
+                MainActivity.lockNavigationDrawer();
+                MainActivity.fragmentManager.beginTransaction()
+                        .replace(R.id.container, MainActivity.PlaceholderFragment.newInstance(3))
+                        .commit();
 
             }
         });

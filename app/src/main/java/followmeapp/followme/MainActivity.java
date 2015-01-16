@@ -71,18 +71,18 @@ public class MainActivity extends ActionBarActivity
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+    public static NavigationDrawerFragment mNavigationDrawerFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+    static FragmentManager fragmentManager = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         /******************************* Connect To Parse ***********************************/
         Parse.initialize(this, "nKW5FeyMcsHSazS0HrN07sE2HWnzqZsMkX8smWDV", "wAq9RGWWLdHfbBJKwIKC1it88YKM8lM1S7y6czrG");
         ParseInstallation.getCurrentInstallation().saveInBackground();
@@ -99,43 +99,29 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+//        mNavigationDrawerFragment.setMenuVisibility(false);
+//        mNavigationDrawerFragment.lockDrawer();
+    }
 
+    static void lockNavigationDrawer(){
+        mNavigationDrawerFragment.setMenuVisibility(false);
+        mNavigationDrawerFragment.lockDrawer();
+    }
+
+    static void unLockNavigationDrawer(){
+        mNavigationDrawerFragment.setMenuVisibility(true);
+        mNavigationDrawerFragment.unLockDrawer();
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        if( position == 3){ // LOGIN
-            if(logedIn == true){
-                Toast.makeText(getApplicationContext(),"You Already Logged In",Toast.LENGTH_LONG).show();
-                return ;
-            }
-            if(logedIn == false) {
-                List<String> permissions = Arrays.asList("public_profile", "user_friends");
-                ParseFacebookUtils.logIn(permissions,this, new LogInCallback() {
-                    @Override
-                    public void done(ParseUser user, ParseException error) {
-                        Log.d("INFO", "in done");
-                        // When your user logs in, immediately get and store its Facebook ID
-                        if (user != null) {
-                            logedIn = true;
-                             getFacebookIdInBackground(getApplicationContext());
-                            Log.d("INFO", user.getUsername());
-                                                /*Mohammad*/
-                            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-                            installation.put("fbUserId",Database.currentUserFbId);
-                            Database.deviceId = installation.getInstallationId();
-                            installation.saveInBackground();
-                        }
-                    }
-                });
-            }
-            return ;
-        }
-        if(position == 4){//Logout
-            if(logedIn == true){
+        if( position == 3){ // LOGIN/PUT
+            if(logedIn == true){//user wants to log out
+                Log.d("LOG", "log out start");
+                mNavigationDrawerFragment.changeLogInOutText(true);
                 ParseUser.logOut();
                 Session fbs = Session.getActiveSession();
-                if (fbs ==null){
+                if (fbs == null){
                     fbs = new Session(getApplicationContext());
                     Session.setActiveSession(fbs);
                 }
@@ -143,14 +129,32 @@ public class MainActivity extends ActionBarActivity
                 logedIn = false;
                 Database.friendsList.clear();
                 Database.update_routes();
-                Toast.makeText(getApplicationContext(),"Logged In == true :D !",Toast.LENGTH_LONG).show();
-            }else{
-                Toast.makeText(getApplicationContext(),"You Didn't LogIn",Toast.LENGTH_LONG).show();
+                Log.d("LOG", "Logged out finished !");
+                return ;
+            }
+            if(logedIn == false) {//user wants to log in
+                Log.d("LOG", "log in start");
+                List<String> permissions = Arrays.asList("public_profile", "user_friends");
+                ParseFacebookUtils.logIn(permissions,this, new LogInCallback() {
+                    @Override
+                    public void done(ParseUser user, ParseException error) {
+                        Log.d("INFO", "in done");
+                        // When your user logs in, immediately get and store its Facebook ID
+                        if (user != null) {
+                            // logged in successful
+                            logedIn = true;
+                            mNavigationDrawerFragment.changeLogInOutText(false);
+                            getFacebookIdInBackground(getApplicationContext());
+                        }
+                    }
+                });
+                return ;
             }
             return ;
         }
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        Database.fromShare = false;
+        fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
@@ -168,9 +172,19 @@ public class MainActivity extends ActionBarActivity
                 Log.d("INFO", "onComplete out start");
                 if (user != null) {
                     Database.currentUserFbId = user.getId();
+
                     ParseUser.getCurrentUser().put("fbId", user.getId());
                     ParseUser.getCurrentUser().put("name", user.getName());
                     ParseUser.getCurrentUser().saveInBackground();
+
+
+                    ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+                    installation.put("fbUserId",Database.currentUserFbId);
+                    Database.deviceId = installation.getInstallationId();
+                    installation.saveInBackground();
+
+
+
                     Request.executeMyFriendsRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserListCallback() {
 
                         @Override
@@ -221,11 +235,9 @@ public class MainActivity extends ActionBarActivity
             ParseUser currentUser = (ParseUser) fr;
             FriendView frView = null;
             Log.d("INFO", "beforeIf");
-
-
             if (currentUser.get("name") != null) {
                 Log.d("INFO", "in Name");
-                frView = new FriendView(ctx);
+                frView = new FriendView();
                 frView.name = currentUser.get("name").toString();
             }
             if (currentUser.get("fbId") != null) {
@@ -233,25 +245,11 @@ public class MainActivity extends ActionBarActivity
                 Log.d("INFO", "setting profile picture 1");
                 Log.d("INFO", "facebook Id "+facebookId);
                 frView.fbId =  facebookId;
-                //frView.friendPicView.setProfileId(facebookId);
-               // frView.friendPicView.setCropped(true);
-               // ImageView fbImage = ( ( ImageView)frView.friendPicView.getChildAt(0));
-               // frView.bitMapPic  = ( (BitmapDrawable) fbImage.getDrawable()).getBitmap();
-
-
-//                frView.friendPicView.setDrawingCacheEnabled(true);
-//                frView.friendPicView.setProfileId(facebookId);
-//                frView.bitMapPic = frView.friendPicView.getDrawingCache();
             } else {
-                // Show the default, blank user profile picture
-                frView.friendPicView.setProfileId(null);
                 Log.d("INFO", "setting profile picture 2");
             }
             // Set additional UI elements
-            // ...
             Database.addFriend(frView);
-
-
             Log.d("INFO", "finished");
         }
     }
@@ -339,7 +337,6 @@ public class MainActivity extends ActionBarActivity
             }
 
             return null;
-       //     return fragment;
         }
 
         public PlaceholderFragment() {

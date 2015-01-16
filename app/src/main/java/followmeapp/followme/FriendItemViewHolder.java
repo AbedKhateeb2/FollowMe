@@ -1,6 +1,8 @@
 package followmeapp.followme;
 
 import android.graphics.Bitmap;
+import android.media.Image;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,5 +14,5 @@ import com.facebook.widget.ProfilePictureView;
 public class FriendItemViewHolder {
     public TextView friendName;
     public ProfilePictureView friendPic;
-    public ImageView bitMapPic;
+    public CheckBox check;
 }

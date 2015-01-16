@@ -1,29 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:facebook="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:baselineAligned="false">
 
 
     <com.facebook.widget.ProfilePictureView
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="30dp"
         android:gravity="center_horizontal"
         android:id="@+id/friend_picture"
-        facebook:preset_size="small" />
+        facebook:preset_size="small"
+        android:layout_weight="0.33" />
 
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="18dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/friend_name"
         android:text="soso"
-        android:gravity="center"
-        />
+        android:gravity="left"
+        android:layout_margin="30dp"
+        android:layout_weight="0.33" />
+    <CheckBox
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/check_box"
+        android:gravity="right"
+        android:layout_margin="100dp"
+        android:layout_gravity="right"
+        android:layout_weight="0.33" />
+
 
 </LinearLayout>

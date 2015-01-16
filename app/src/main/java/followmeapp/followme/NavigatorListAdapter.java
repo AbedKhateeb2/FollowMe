@@ -13,15 +13,16 @@ import android.widget.TextView;
  */
 public class NavigatorListAdapter extends BaseAdapter {
     private Context m_context;
+    boolean toLogin = true;
     String[] options;
-    int[] navIcons = {R.drawable.maps_icon,R.drawable.routes_icon,R.drawable.friends_icon,R.drawable.facebook_icon,R.drawable.logout_icon};
+    int[] navIcons = {R.drawable.maps_icon,R.drawable.routes_icon,R.drawable.friends_icon,R.drawable.facebook_icon};
     NavigatorListAdapter(Context ctx){
         m_context = ctx;
         options = ctx.getResources().getStringArray(R.array.navigationOptions);
     }
     @Override
     public int getCount() {
-        return options.length;
+        return navIcons.length;
     }
 
     @Override
@@ -47,7 +48,11 @@ public class NavigatorListAdapter extends BaseAdapter {
 
         TextView nTitle = (TextView)row.findViewById(R.id.navigator_text);
         ImageView nIcon = (ImageView)row.findViewById(R.id.navigator_icon);
-        nTitle.setText(options[position]);
+        if( (position == 3) && !toLogin ){
+            nTitle.setText(options[position+1]);
+        }else{
+            nTitle.setText(options[position]);
+        }
         nIcon.setImageResource(navIcons[position]);
         return row;
     }

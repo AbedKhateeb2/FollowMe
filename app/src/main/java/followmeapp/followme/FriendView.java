@@ -11,10 +11,5 @@ import com.facebook.widget.ProfilePictureView;
 public class FriendView {
     public String fbId;
     public String name;
-    public ProfilePictureView friendPicView;
-    public Bitmap bitMapPic;
-    FriendView(Context ctx){
-       // friendPicView = new ProfilePictureView(ctx);
-
-    }
+    public boolean checked = false;
 }
