@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -34,7 +35,7 @@ public class FriendsListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View view = null;
         FriendItemViewHolder fHolder;
         if( convertView == null ){
@@ -47,6 +48,12 @@ public class FriendsListAdapter extends BaseAdapter {
             fHolder.friendName = (TextView)view.findViewById(R.id.friend_name);
             fHolder.friendPic = (ProfilePictureView)view.findViewById(R.id.friend_picture);
             fHolder.check = (CheckBox)view.findViewById(R.id.check_box);
+            fHolder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    Database.friendsList.get(position).checked = isChecked;
+                }
+            });
             view.setTag(fHolder);
         }else{
             //Cast convertView to View

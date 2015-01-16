@@ -35,10 +35,22 @@ public class FriendsFragment extends Fragment {
         cancelB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.unLockNavigationDrawer();
-                MainActivity.fragmentManager.beginTransaction()
-                        .replace(R.id.container, MainActivity.PlaceholderFragment.newInstance(2))
-                        .commit();
+                goToRoutes();
+            }
+        });
+        sendB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // count the checked friends and prepare the list of fbIds that we want to send
+                // the route to them
+                for(FriendView frv : Database.friendsList ){
+                    if(frv.checked){
+                        Database.sendTo.add(frv.fbId);
+                    }
+                }
+                goToRoutes();
+                // call the send function on background and
+                // send the routes along with pushNotifications to each user
             }
         });
         return v;
@@ -52,21 +64,33 @@ public class FriendsFragment extends Fragment {
         WeakReference<Context> Mcontext = new WeakReference<Context>(getActivity());
         friendsAdapter = new FriendsListAdapter(Mcontext.get());
         friendsList.setAdapter(friendsAdapter);
-        friendsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if( Database.friendsList.get(position).checked == true ){
-                    Database.friendsList.get(position).checked = false;
-                }else{
-                    Database.friendsList.get(position).checked = true;
-                }
-                friendsAdapter.notifyDataSetChanged();
-            }
-        });
+//        friendsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                if( Database.friendsList.get(position).checked == true ){
+//                    Database.friendsList.get(position).checked = false;
+//                }else{
+//                    Database.friendsList.get(position).checked = true;
+//                }
+//                friendsAdapter.notifyDataSetChanged();
+//            }
+//        });
         if(Database.fromShare){
             sendB.setVisibility(Button.VISIBLE);
             cancelB.setVisibility(Button.VISIBLE);
         }
     }
 
+    private void goToRoutes(){
+        MainActivity.unLockNavigationDrawer();
+        MainActivity.fragmentManager.beginTransaction()
+                .replace(R.id.container, MainActivity.PlaceholderFragment.newInstance(2))
+                .commit();
+    }
+
+    public void notifyDataChanged(){
+        if(friendsAdapter != null){
+            friendsAdapter.notifyDataSetChanged();
+        }
+    }
 }

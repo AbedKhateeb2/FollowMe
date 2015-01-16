@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">FollowMe</string>
+    <string name="app_name">Follow Me</string>
     <string-array name="navigationOptions">
         <item>Map</item>
         <item>Routes</item>

@@ -278,7 +278,7 @@ public class MapFragment extends Fragment {
                     Route.start_routing();
                     mChronometer.setBase(SystemClock.elapsedRealtime());
                     mChronometer.start();
-                    button.setImageResource(R.drawable.pause);
+                    button.setImageResource(R.drawable.record_icon);
                     information.setVisibility(View.VISIBLE);
                     information.startAnimation(slide_down);
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);

@@ -15,6 +15,7 @@ public class Database {
      static public String currentUserFbId;
     static public String deviceId;
     static public boolean fromShare = false;
+    static public List<String> sendTo = new LinkedList<>();
      static List<RouteView> routeList = new LinkedList<>();
      static List<FriendView> friendsList = new LinkedList<>();
      static public RouteView getRoutes(int position){
