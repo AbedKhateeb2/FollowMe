@@ -12,7 +12,9 @@ import java.util.List;
  * Created by abed on 1/9/2015.
  */
 public class Database {
+    static public String sendRouteId;
      static public String currentUserFbId;
+    static public String currentUserName;
     static public String deviceId;
     static public boolean fromShare = false;
     static public List<String> sendTo = new LinkedList<>();
@@ -86,4 +88,18 @@ public class Database {
 //        routeList.add(routeView);
     }
     public static void addFriend(FriendView fr){ friendsList.add(fr);}
+
+    static class OnSendData{
+        String senderDevice;
+        String senderFbId;
+        List<String> receivers;
+
+        OnSendData(String devId,String senderId,List<String> list){
+            senderDevice = devId;
+            senderFbId = senderId;
+            receivers = list;
+        }
+    };
 }
+
+

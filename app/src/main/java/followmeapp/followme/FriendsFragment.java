@@ -2,6 +2,7 @@ package followmeapp.followme;
 
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,13 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.parse.ParseInstallation;
+import com.parse.ParsePush;
+import com.parse.ParseQuery;
 import com.parse.entity.mime.MinimalField;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 
@@ -46,8 +53,30 @@ public class FriendsFragment extends Fragment {
                 for(FriendView frv : Database.friendsList ){
                     if(frv.checked){
                         Database.sendTo.add(frv.fbId);
+                        Log.d("PUSH","SendToId"+frv.fbId);
+
                     }
                 }
+                Log.d("PUSH","currenUserId"+Database.currentUserFbId);
+
+                for(String recFbId : Database.sendTo){
+                    // Create our Installation query
+                    ParseQuery pushQuery = ParseInstallation.getQuery();
+                    pushQuery.whereEqualTo("fbUserId", recFbId);
+
+                    try {
+                        JSONObject data = new JSONObject("{\"name\": \""+Database.sendRouteId+"\"}");
+                        // Send push notification to query
+                        ParsePush push = new ParsePush();
+                        push.setQuery(pushQuery); // Set our Installation query
+                        push.setMessage("You've got a new Route from " + Database.currentUserName);
+                        push.setData(data);
+                        push.sendInBackground();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+//                new SendNotifications().execute(new Database.OnSendData(Database.deviceId, Database.currentUserFbId, Database.sendTo));
                 goToRoutes();
                 // call the send function on background and
                 // send the routes along with pushNotifications to each user

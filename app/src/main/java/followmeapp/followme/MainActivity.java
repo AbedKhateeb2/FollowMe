@@ -52,6 +52,7 @@ import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.ParseAnalytics;
@@ -86,6 +87,16 @@ public class MainActivity extends ActionBarActivity
         /******************************* Connect To Parse ***********************************/
         Parse.initialize(this, "nKW5FeyMcsHSazS0HrN07sE2HWnzqZsMkX8smWDV", "wAq9RGWWLdHfbBJKwIKC1it88YKM8lM1S7y6czrG");
         ParseInstallation.getCurrentInstallation().saveInBackground();
+//        ParsePush.subscribeInBackground("", new SaveCallback() {
+//            @Override
+//            public void done(ParseException e) {
+//                if (e == null) {
+//                    Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+//                } else {
+//                    Log.e("com.parse.push", "failed to subscribe for push", e);
+//                }
+//            }
+//        });
         /***************************************************************************/
         userFriends = new FriendsFragment();
         userRoutes = new RoutesFragment();
@@ -158,11 +169,6 @@ public class MainActivity extends ActionBarActivity
                 .commit();
     }
 
-
-    public void OnShare() {
-        
-    }
-
     private static void getFacebookIdInBackground(final Context applicationContext) {
         Request.executeMeRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
             @Override
@@ -170,7 +176,7 @@ public class MainActivity extends ActionBarActivity
                 Log.d("INFO", "onComplete out start");
                 if (user != null) {
                     Database.currentUserFbId = user.getId();
-
+                    Database.currentUserName = user.getName();
                     ParseUser.getCurrentUser().put("fbId", user.getId());
                     ParseUser.getCurrentUser().put("name", user.getName());
                     ParseUser.getCurrentUser().saveInBackground();

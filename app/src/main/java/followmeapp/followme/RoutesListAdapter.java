@@ -70,7 +70,7 @@ public class RoutesListAdapter extends BaseAdapter {
         holder.shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String routeID = routeView.objectID;
+                Database.sendRouteId = routeView.objectID;
                 Database.fromShare = true;
                 MainActivity.lockNavigationDrawer();
                 MainActivity.fragmentManager.beginTransaction()
