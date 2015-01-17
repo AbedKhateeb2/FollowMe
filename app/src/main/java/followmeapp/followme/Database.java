@@ -20,7 +20,9 @@ public class Database {
     static public List<String> sendTo = new LinkedList<>();
      static List<RouteView> routeList = new LinkedList<>();
      static List<FriendView> friendsList = new LinkedList<>();
-     static public RouteView getRoutes(int position){
+    public static boolean loadRoute=false;
+
+    static public RouteView getRoutes(int position){
          return routeList.get(position);
      }
     static public FriendView getFriends(int position){

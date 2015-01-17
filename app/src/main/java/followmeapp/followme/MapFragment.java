@@ -45,6 +45,7 @@ import java.lang.Override;
 import java.lang.String;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -66,7 +67,7 @@ public class MapFragment extends Fragment {
     MapView mMapView;
     private static DecimalFormat df = new DecimalFormat("####0.00");
 
-    private static GoogleMap googleMap;
+    static GoogleMap googleMap;
     private static final long MINIMUM_DISTANCECHANGE_FOR_UPDATE = 1; // in Meters
     private static final long MINIMUM_TIME_BETWEEN_UPDATE = 10000; // in Milliseconds
     private static final long ZOOM_IN_DEFAULT = 17;
@@ -101,8 +102,8 @@ public class MapFragment extends Fragment {
 
     }
 
-    /* public static ArrayList<GeoPoint> decode(String encodedString, int precision) {
-         ArrayList<GeoPoint> polyline = new ArrayList<GeoPoint>();
+     public static ArrayList<LatLng> decode(String encodedString) {
+         ArrayList<LatLng> polyline = new ArrayList<LatLng>();
          int index = 0;
          int len = encodedString.length();
          int lat = 0, lng = 0;
@@ -127,12 +128,13 @@ public class MapFragment extends Fragment {
              int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
              lng += dlng;
 
-             GeoPoint p = new GeoPoint(lat*precision, lng*precision);
+             LatLng p = new LatLng(lat/100000.0, lng/100000.0);
              polyline.add(p);
          }
 
          return polyline;
-     }*/
+     }
+
     public void dialogShow() {
         if (ParseUser.getCurrentUser() == null) {
             AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
@@ -211,6 +213,7 @@ public class MapFragment extends Fragment {
             instance = fragment;
             return fragment;
         }
+
         return instance;
     }
 
@@ -332,5 +335,17 @@ public class MapFragment extends Fragment {
         return v;
     }
 
-
+    @Override
+    public void onStart(){
+        super.onStart();
+        if (Database.loadRoute) {
+            Database.loadRoute = false;
+            googleMap.addPolyline(Route.polylineOptions);
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(Route.polylineOptions.getPoints().get(0)).zoom(ZOOM_IN_DEFAULT).build();
+            googleMap.animateCamera(CameraUpdateFactory
+                    .newCameraPosition(cameraPosition));
+        }
+        
+    }
 }
