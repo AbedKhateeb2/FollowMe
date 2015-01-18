@@ -12,6 +12,7 @@ import java.util.List;
  * Created by abed on 1/9/2015.
  */
 public class Database {
+    static public String receivedRouteId;
     static public String sendRouteId;
      static public String currentUserFbId;
     static public String currentUserName;

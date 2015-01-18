@@ -18,14 +18,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-public class RecieveRouteDialog extends DialogFragment {
+public class ReceiveRouteDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.route_dialog, container);
-        final Button loginbutton = (Button) view.findViewById(R.id.btn_login);
-        Button cancelbutton = (Button) view.findViewById(R.id.btn_cancel);
-        final EditText name = (EditText) view.findViewById(R.id.route_name);
-        loginbutton.setOnClickListener(new View.OnClickListener() {
+        View view = inflater.inflate(R.layout.push_notification, container);
+        final Button acceptButton = (Button) view.findViewById(R.id.btn_accept);
+        Button rejectButton = (Button) view.findViewById(R.id.btn_reject);
+        final EditText name = (EditText) view.findViewById(R.id.route_name_pushed);
+        acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -33,10 +33,13 @@ public class RecieveRouteDialog extends DialogFragment {
 
         });
 
-        cancelbutton.setOnClickListener(new View.OnClickListener() {
+        rejectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                MainActivity.unLockNavigationDrawer();
+                MainActivity.fragmentManager.beginTransaction()
+                        .replace(R.id.container, MainActivity.PlaceholderFragment.newInstance(1))
+                        .commit();
             }
         });
         return view;

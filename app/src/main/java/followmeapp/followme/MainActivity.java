@@ -57,6 +57,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.ParseAnalytics;
 import com.parse.ParseInstallation;
+import com.parse.PushService;
 import com.parse.RefreshCallback;
 import com.parse.SaveCallback;
 
@@ -86,7 +87,8 @@ public class MainActivity extends ActionBarActivity
         setContentView(R.layout.activity_main);
         /******************************* Connect To Parse ***********************************/
         Parse.initialize(this, "nKW5FeyMcsHSazS0HrN07sE2HWnzqZsMkX8smWDV", "wAq9RGWWLdHfbBJKwIKC1it88YKM8lM1S7y6czrG");
-        ParseInstallation.getCurrentInstallation().saveInBackground();
+//        ParseInstallation.getCurrentInstallation().saveInBackground();
+        //PushService.setDefaultPushCallback(this, MainActivity.class);
 //        ParsePush.subscribeInBackground("", new SaveCallback() {
 //            @Override
 //            public void done(ParseException e) {

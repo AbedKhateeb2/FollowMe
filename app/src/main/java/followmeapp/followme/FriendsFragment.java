@@ -65,13 +65,15 @@ public class FriendsFragment extends Fragment {
                     pushQuery.whereEqualTo("fbUserId", recFbId);
 
                     try {
-                        JSONObject data = new JSONObject("{\"name\": \""+Database.sendRouteId+"\"}");
+                        JSONObject data = new JSONObject("{\"route_id\": \""+Database.sendRouteId+"\"}");
                         // Send push notification to query
                         ParsePush push = new ParsePush();
                         push.setQuery(pushQuery); // Set our Installation query
                         push.setMessage("You've got a new Route from " + Database.currentUserName);
                         push.setData(data);
                         push.sendInBackground();
+//                        JSONObject JObj = new JSONObject("{\"route_id\": \""+Database.sendRouteId+"\"}");
+//                        Log.d("JSON","{\"route_id\": \""+Database.sendRouteId+"\"}"+"------"+JObj.get("route_id"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
