@@ -337,7 +337,8 @@ public class MainActivity extends ActionBarActivity
 
             switch(sectionNumber){
                 case 1:
-                    return MapFragment.newInstance(null,null);
+                    MapFragment res = MapFragment.newInstance(null,null);
+                    return res;
                 case 2:
                     return userRoutes;
                 case 3:

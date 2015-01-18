@@ -1,7 +1,9 @@
 package followmeapp.followme;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +11,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by abed on 1/9/2015.
@@ -75,6 +82,23 @@ public class RoutesListAdapter extends BaseAdapter {
                 MainActivity.lockNavigationDrawer();
                 MainActivity.fragmentManager.beginTransaction()
                         .replace(R.id.container, MainActivity.PlaceholderFragment.newInstance(3))
+                        .commit();
+
+            }
+        });
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String encodedRoute = routeView.imageURL.split("Cenc:")[1];
+                Log.d("points",encodedRoute);
+                ArrayList<LatLng> points = MapFragment.decode(encodedRoute);
+                Route.polylineOptions = new PolylineOptions();
+                Route.polylineOptions.addAll(points);
+                Route.polylineOptions.color(Color.rgb(65, 105, 225)).width(10).visible(true);
+                Database.loadRoute = true;
+                //MainActivity.lockNavigationDrawer();
+                MainActivity.fragmentManager.beginTransaction()
+                        .replace(R.id.container, MainActivity.PlaceholderFragment.newInstance(1))
                         .commit();
 
             }
