@@ -23,7 +23,6 @@ public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     static RoutesFragment userRoutes;
     static FriendsFragment userFriends;
-    //private boolean logedIn;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -56,19 +55,16 @@ public class MainActivity extends ActionBarActivity
         /***************************************************************************/
         userFriends = new FriendsFragment();
         userRoutes = new RoutesFragment();
-
         /*************************** Navigation Drawable Code ************************************/
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
         Database.update_routes();
-
         /********************************************************************************/
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-
         /***************** Last to do ******************/
         loginObj = new UserManagement(getApplicationContext(),this);
     }
@@ -88,39 +84,13 @@ public class MainActivity extends ActionBarActivity
         if( position == 3){ // LOGIN/PUT
             if(loginObj.isLoggedIn()){//user wants to log out
                 Log.d("LOG", "log out start");
-
                 loginObj.logOut();
-//                ParseUser.logOut();
-//                Session fbs = Session.getActiveSession();
-//                if (fbs == null){
-//                    fbs = new Session(getApplicationContext());
-//                    Session.setActiveSession(fbs);
-//                }
-//                fbs.closeAndClearTokenInformation();
-//                logedIn = false;
-//                Database.friendsList.clear();
-//                Database.update_routes();
                 Log.d("LOG", "Log out finished !");
                 return ;
             }
             if(!loginObj.isLoggedIn()) {//user wants to log in
                 Log.d("LOG", "log in start");
                 loginObj.logIn();
-//                List<String> permissions = Arrays.asList("public_profile", "user_friends");
-//                ParseFacebookUtils.logIn(permissions,this, new LogInCallback() {
-//                    @Override
-//                    public void done(ParseUser user, ParseException error) {
-//                        Log.d("INFO", "in done");
-//                        // When your user logs in, immediately get and store its Facebook ID
-//                        if (user != null) {
-//                            // logged in successful
-//
-////                            mNavigationDrawerFragment.changeLogInOutText(false);
-//                            loginObj.logIn();
-////                          getFacebookIdInBackground(getApplicationContext);
-//                        }
-//                    }
-//                });
                 return ;
             }
             return ;
@@ -147,8 +117,6 @@ public class MainActivity extends ActionBarActivity
         ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
     }
 
-
-
     public void onSectionAttached(int number) {
         switch (number) {
             case 1:
@@ -172,35 +140,6 @@ public class MainActivity extends ActionBarActivity
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }
-
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-//            // Only show items in the action bar relevant to this screen
-//            // if the drawer is not showing. Otherwise, let the drawer
-//            // decide what to show in the action bar.
-//            getMenuInflater().inflate(R.menu.main, menu);
-//            restoreActionBar();
-//            return true;
-//        }
-//        return super.onCreateOptionsMenu(menu);
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
 
     /**
      * A placeholder fragment containing a simple view.

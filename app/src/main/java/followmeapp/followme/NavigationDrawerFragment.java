@@ -248,7 +248,7 @@ public class NavigationDrawerFragment extends Fragment {
             inflater.inflate(R.menu.global, menu);
             showGlobalContextActionBar();
         }
-        super.onCreateOptionsMenu(menu, inflater);
+        //super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -257,12 +257,12 @@ public class NavigationDrawerFragment extends Fragment {
             return true;
         }
 
-        if (item.getItemId() == R.id.action_example) {
-            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
-            return true;
-        }
+//        if (item.getItemId() == R.id.action_example) {
+//            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
+//            return true;
+//        }
 
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     /**
