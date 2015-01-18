@@ -1,75 +1,29 @@
 package followmeapp.followme;
 
 import java.lang.CharSequence;import java.lang.Override;import java.lang.String;
-import java.lang.ref.WeakReference;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.pdf.PdfRenderer;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.GridLayout;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.model.GraphUser;
-import com.facebook.widget.LoginButton;
-import com.facebook.widget.ProfilePictureView;
-import com.parse.LogInCallback;
 import com.parse.Parse;
-import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
-import com.parse.ParseObject;
-import com.parse.ParsePush;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
-import com.parse.ParseAnalytics;
-import com.parse.ParseInstallation;
-import com.parse.PushService;
-import com.parse.RefreshCallback;
-import com.parse.SaveCallback;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     static RoutesFragment userRoutes;
     static FriendsFragment userFriends;
-    private boolean logedIn;
+    //private boolean logedIn;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -80,7 +34,7 @@ public class MainActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
     static FragmentManager fragmentManager = null;
-
+    UserManagement loginObj = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,16 +56,21 @@ public class MainActivity extends ActionBarActivity
         /***************************************************************************/
         userFriends = new FriendsFragment();
         userRoutes = new RoutesFragment();
-        logedIn = false;
+
         /*************************** Navigation Drawable Code ************************************/
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
         Database.update_routes();
+
+        /********************************************************************************/
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        /***************** Last to do ******************/
+        loginObj = new UserManagement(getApplicationContext(),this);
     }
 
     static void lockNavigationDrawer(){
@@ -127,38 +86,41 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         if( position == 3){ // LOGIN/PUT
-            if(logedIn == true){//user wants to log out
+            if(loginObj.isLoggedIn()){//user wants to log out
                 Log.d("LOG", "log out start");
-                mNavigationDrawerFragment.changeLogInOutText(true);
-                ParseUser.logOut();
-                Session fbs = Session.getActiveSession();
-                if (fbs == null){
-                    fbs = new Session(getApplicationContext());
-                    Session.setActiveSession(fbs);
-                }
-                fbs.closeAndClearTokenInformation();
-                logedIn = false;
-                Database.friendsList.clear();
-                Database.update_routes();
-                Log.d("LOG", "Logged out finished !");
+
+                loginObj.logOut();
+//                ParseUser.logOut();
+//                Session fbs = Session.getActiveSession();
+//                if (fbs == null){
+//                    fbs = new Session(getApplicationContext());
+//                    Session.setActiveSession(fbs);
+//                }
+//                fbs.closeAndClearTokenInformation();
+//                logedIn = false;
+//                Database.friendsList.clear();
+//                Database.update_routes();
+                Log.d("LOG", "Log out finished !");
                 return ;
             }
-            if(logedIn == false) {//user wants to log in
+            if(!loginObj.isLoggedIn()) {//user wants to log in
                 Log.d("LOG", "log in start");
-                List<String> permissions = Arrays.asList("public_profile", "user_friends");
-                ParseFacebookUtils.logIn(permissions,this, new LogInCallback() {
-                    @Override
-                    public void done(ParseUser user, ParseException error) {
-                        Log.d("INFO", "in done");
-                        // When your user logs in, immediately get and store its Facebook ID
-                        if (user != null) {
-                            // logged in successful
-                            logedIn = true;
-                            mNavigationDrawerFragment.changeLogInOutText(false);
-                            getFacebookIdInBackground(getApplicationContext());
-                        }
-                    }
-                });
+                loginObj.logIn();
+//                List<String> permissions = Arrays.asList("public_profile", "user_friends");
+//                ParseFacebookUtils.logIn(permissions,this, new LogInCallback() {
+//                    @Override
+//                    public void done(ParseUser user, ParseException error) {
+//                        Log.d("INFO", "in done");
+//                        // When your user logs in, immediately get and store its Facebook ID
+//                        if (user != null) {
+//                            // logged in successful
+//
+////                            mNavigationDrawerFragment.changeLogInOutText(false);
+//                            loginObj.logIn();
+////                          getFacebookIdInBackground(getApplicationContext);
+//                        }
+//                    }
+//                });
                 return ;
             }
             return ;
@@ -171,61 +133,12 @@ public class MainActivity extends ActionBarActivity
                 .commit();
     }
 
-    private static void getFacebookIdInBackground(final Context applicationContext) {
-        Request.executeMeRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
-            @Override
-            public void onCompleted(GraphUser user, Response response) {
-                Log.d("INFO", "onComplete out start");
-                if (user != null) {
-                    Database.currentUserFbId = user.getId();
-                    Database.currentUserName = user.getName();
-                    ParseUser.getCurrentUser().put("fbId", user.getId());
-                    ParseUser.getCurrentUser().put("name", user.getName());
-                    ParseUser.getCurrentUser().saveInBackground();
+    static public void changeLogButtonMessage(boolean to){
+        mNavigationDrawerFragment.changeLogInOutText(to);
+    }
 
-
-                    ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-                    installation.put("fbUserId",Database.currentUserFbId);
-                    Database.deviceId = installation.getInstallationId();
-                    installation.saveInBackground();
-
-
-
-                    Request.executeMyFriendsRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserListCallback() {
-
-                        @Override
-                        public void onCompleted(List<GraphUser> users, Response response) {
-                            Database.update_routes();
-                            Log.d("INFO", "onComplete in start");
-                            if (users != null) {
-                                List<String> friendsList = new ArrayList<String>();
-                                for (GraphUser user : users) {
-                                    Log.d("FB",user.getId());
-                                    friendsList.add(user.getId());
-                                }
-
-                                // Construct a ParseUser query that will find friends whose
-                                // facebook IDs are contained in the current user's friend list.
-                                ParseQuery friendQuery = ParseQuery.getUserQuery();
-                                friendQuery.whereContainedIn("fbId", friendsList);
-
-                                // findObjects will return a list of ParseUsers that are friends with
-                                // the current user
-                                try {
-                                    Log.d("INFO", "parse object");
-                                    List<ParseObject> friendUsers = friendQuery.find();
-                                    Log.d("INFO", "size : "+friendUsers.size());
-                                    updateViewsWithProfileInfo(friendUsers,applicationContext);
-
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-        });
+    static public void notifyFriendsListChange(){
+        userFriends.notifyDataChanged();
     }
 
     @Override
@@ -234,33 +147,7 @@ public class MainActivity extends ActionBarActivity
         ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
     }
 
-    private static void updateViewsWithProfileInfo(List<ParseObject> friendUsers,final Context ctx) {
-        Log.d("INFO", "profileInfo size = " + friendUsers.size());
-        for (ParseObject fr : friendUsers) {
-            // ParseUser currentUser = ParseUser.getCurrentUser();
-            ParseUser currentUser = (ParseUser) fr;
-            FriendView frView = null;
-            Log.d("INFO", "beforeIf");
-            if (currentUser.get("name") != null) {
-                Log.d("INFO", "in Name");
-                frView = new FriendView();
-                frView.name = currentUser.get("name").toString();
-            }
-            if (currentUser.get("fbId") != null) {
-                String facebookId = currentUser.get("fbId").toString();
-                Log.d("INFO", "setting profile picture 1");
-                Log.d("INFO", "facebook Id "+facebookId);
-                frView.fbId =  facebookId;
-            } else {
-                Log.d("INFO", "setting profile picture 2");
-            }
-            // Set additional UI elements
-            Database.addFriend(frView);
 
-            Log.d("INFO", "finished");
-        }
-        userFriends.notifyDataChanged();
-    }
 
     public void onSectionAttached(int number) {
         switch (number) {
