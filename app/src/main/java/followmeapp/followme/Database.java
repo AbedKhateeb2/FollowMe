@@ -83,9 +83,10 @@ public class Database {
         routeObject.put("route_image_URL",routeView.imageURL);
         routeObject.put("route_length",routeView.length);
         routeObject.put("route_type",routeView.type);
-        routeObject.put("route_owner", ParseUser.getCurrentUser().getObjectId());
+        routeObject.put("route_owner", routeView.owner);
         routeObject.saveInBackground();
     }
+
     public static void addFriend(FriendView fr){ friendsList.add(fr);}
 
     static class OnSendData{

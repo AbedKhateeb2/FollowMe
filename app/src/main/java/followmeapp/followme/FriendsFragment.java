@@ -64,7 +64,6 @@ public class FriendsFragment extends Fragment {
                     pushQuery.whereEqualTo("fbUserId", recFbId);
 
                     try {
-                        //"alert": "You've got a new Route from "+Database.currentUserName+"",
                         JSONObject data = new JSONObject("{\"alert\": \"You've got a new Route from "+Database.currentUserName+"\",\"title\": \"Follow Me\",\"route_id\": \""+Database.sendRouteId+"\"}");
                         // Send push notification to query
                         ParsePush push = new ParsePush();
@@ -80,8 +79,6 @@ public class FriendsFragment extends Fragment {
                 }
 //                new SendNotifications().execute(new Database.OnSendData(Database.deviceId, Database.currentUserFbId, Database.sendTo));
                 goToRoutes();
-                // call the send function on background and
-                // send the routes along with pushNotifications to each user
             }
         });
         return v;
