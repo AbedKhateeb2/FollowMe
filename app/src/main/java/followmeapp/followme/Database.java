@@ -8,6 +8,8 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,38 +39,7 @@ public class Database {
         return routeList.size();
     }
     static public void update_routes(){
-        ParseUser user = ParseUser.getCurrentUser();
-        routeList.clear();
-        if (user == null){
-            return;
-        }
-        ParseQuery routeQuery = ParseQuery.getQuery("Route");
-        routeQuery.whereEqualTo("route_owner",user.getObjectId());
-        List<ParseObject> routes=null;
-        try {
-            routes = routeQuery.find();
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return;
-        }
-        for (ParseObject route : routes){
-            String name = route.getString("route_name");
-            String area = route.getString("route_area");
-            String date = route.getString("route_date");
-            String duration = route.getString("route_duration");
-            String imageURL = route.getString("route_image_URL");
-            String length = route.getString("route_length");
-            String type = route.getString("route_type");
-            String objectId = route.getObjectId();//route.getString("objectId");
-            String owner = route.getString("route_owner");
-            //Log.d("OBJ","===>"+objectId);
-
-
-            routeList.add(routeList.size(),new RouteView(name,imageURL,area,length,duration,type,date,owner,objectId));
-        }
-        if (RoutesFragment.routesListAdapter!=null){
-            RoutesFragment.routesListAdapter.notifyDataSetChanged();
-        }
+        new ImportDataFromDatabase().execute();
     }
     static public int getFriendsSize(){
         return friendsList.size();
@@ -84,7 +55,14 @@ public class Database {
         routeObject.put("route_length",routeView.length);
         routeObject.put("route_type",routeView.type);
         routeObject.put("route_owner", ParseUser.getCurrentUser().getObjectId());
-        routeObject.saveInBackground();
+        routeObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e!=null){
+                    update_routes();
+                }
+            }
+        });
     }
     public static void addFriend(FriendView fr){ friendsList.add(fr);}
 

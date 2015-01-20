@@ -34,7 +34,8 @@
         <item>Stairs</item>
         <item>Run</item>
         <item>Road Cycling</item>
-        <item>Mountain Bike</item>
+        <item>Mountain Cycling</item>
+        <item>Drive</item>
         <item>Other</item>
     </string-array>
 
