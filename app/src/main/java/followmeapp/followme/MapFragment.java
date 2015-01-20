@@ -239,10 +239,16 @@ public class MapFragment extends Fragment {
             @Override
             public void onLocationChanged(Location location) {
                 LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                if (Route.lastPoint != null){
+                    float[] results = new float[1];
+                    Location.distanceBetween(Route.lastPoint.latitude,Route.lastPoint.longitude,currentLocation.latitude,currentLocation.longitude,results);
+                    distanceView.setText(" " + df.format(results[0]/1000) + " km");
+                }
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLocation, ZOOM_IN_DEFAULT);
                 googleMap.animateCamera(cameraUpdate);
                 timeElapsed = SystemClock.elapsedRealtime() - mChronometer.getBase();
                 speedView.setText(" " + location.getSpeed() + " m/s");
+                Route.lastPoint = currentLocation;
                 if (Route.is_started() && location.getAccuracy() <= 5) {
                     double total_distance = Route.add_point(currentLocation);
                     googleMap.clear();
@@ -341,9 +347,9 @@ public class MapFragment extends Fragment {
             //button.setImageResource(R.drawable.record_icon);
             information.setVisibility(View.VISIBLE);
             information.startAnimation(slide_down);
-            mChronometer.setBase(SystemClock.elapsedRealtime() - (Route.time));
-            mChronometer.setFormat("HH:MM:SS");
-            distanceView.setText(" " + Route.distance + " km");
+            mChronometer.setBase(SystemClock.elapsedRealtime());
+            mChronometer.start();
+            distanceView.setText(" " + 0 + " km");
             googleMap.addPolyline(Route.polylineOptions);
 
             CameraPosition cameraPosition = new CameraPosition.Builder()
