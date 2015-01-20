@@ -64,6 +64,7 @@ public class Database {
             }
         });
     }
+
     public static void addFriend(FriendView fr){ friendsList.add(fr);}
 
     static class OnSendData{

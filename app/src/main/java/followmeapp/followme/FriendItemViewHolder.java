@@ -13,6 +13,7 @@ import com.facebook.widget.ProfilePictureView;
  */
 public class FriendItemViewHolder {
     public TextView friendName;
-    public ProfilePictureView friendPic;
+//    public ProfilePictureView friendPic;
+    public ImageView friendPic;
     public CheckBox check;
 }
