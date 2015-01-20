@@ -65,11 +65,11 @@ public class FriendsFragment extends Fragment {
                     pushQuery.whereEqualTo("fbUserId", recFbId);
 
                     try {
-                        JSONObject data = new JSONObject("{\"route_id\": \""+Database.sendRouteId+"\"}");
+                        JSONObject data = new JSONObject("{\"alert\": \"You've got a new Route from "+Database.currentUserName+"\",\"route_id\": \""+Database.sendRouteId+"\"}");
                         // Send push notification to query
                         ParsePush push = new ParsePush();
                         push.setQuery(pushQuery); // Set our Installation query
-                        push.setMessage("You've got a new Route from " + Database.currentUserName);
+//                        push.setMessage("You've got a new Route from " + Database.currentUserName);
                         push.setData(data);
                         push.sendInBackground();
 //                        JSONObject JObj = new JSONObject("{\"route_id\": \""+Database.sendRouteId+"\"}");
@@ -77,6 +77,20 @@ public class FriendsFragment extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+
+
+
+//                    var query = new Parse.Query(Parse.Installation);
+//                    query.equalTo('gender', 'male');
+//                    query.greaterThanOrEqualTo('age', 18);
+//
+//                    Parse.Push.send({
+//                            where: query, // Set our Installation query
+//                            data: {
+//                        alert: "A test notification from Parse!"
+//                    }
+//                    });
+
                 }
 //                new SendNotifications().execute(new Database.OnSendData(Database.deviceId, Database.currentUserFbId, Database.sendTo));
                 goToRoutes();
@@ -95,17 +109,6 @@ public class FriendsFragment extends Fragment {
         WeakReference<Context> Mcontext = new WeakReference<Context>(getActivity());
         friendsAdapter = new FriendsListAdapter(Mcontext.get());
         friendsList.setAdapter(friendsAdapter);
-//        friendsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                if( Database.friendsList.get(position).checked == true ){
-//                    Database.friendsList.get(position).checked = false;
-//                }else{
-//                    Database.friendsList.get(position).checked = true;
-//                }
-//                friendsAdapter.notifyDataSetChanged();
-//            }
-//        });
         if(Database.fromShare){
             sendB.setVisibility(Button.VISIBLE);
             cancelB.setVisibility(Button.VISIBLE);

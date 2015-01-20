@@ -1,9 +1,13 @@
 package followmeapp.followme;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.parse.Parse;
+import com.parse.ParseException;
 import com.parse.ParseInstallation;
+import com.parse.ParsePush;
+import com.parse.SaveCallback;
 
 /**
  * Created by salih on 1/17/2015.

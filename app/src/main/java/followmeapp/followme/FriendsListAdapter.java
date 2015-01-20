@@ -42,7 +42,6 @@ public class FriendsListAdapter extends BaseAdapter {
             // Creat new View
             LayoutInflater inflater = LayoutInflater.from(ctx);
             view = inflater.inflate(R.layout.friendsitem,null);
-
             //create view holder
             fHolder = new FriendItemViewHolder();
             fHolder.friendName = (TextView)view.findViewById(R.id.friend_name);

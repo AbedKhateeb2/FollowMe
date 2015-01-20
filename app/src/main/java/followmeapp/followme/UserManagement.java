@@ -1,7 +1,9 @@
 package followmeapp.followme;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
 
 import com.facebook.Request;
@@ -42,12 +44,11 @@ public class UserManagement {
         return loggedIn;
     }
 
-    void logOut(){
+    public void logOut(){
         MainActivity.changeLogButtonMessage(true);
         ParseUser.logOut();
         Session fbs = Session.getActiveSession();
         if (fbs == null){
-//            fbs = new Session(getApplicationContext());
             fbs = new Session(ctx);
             Session.setActiveSession(fbs);
         }
@@ -68,15 +69,27 @@ public class UserManagement {
                 // When your user logs in, immediately get and store its Facebook ID
                 if (user != null) {
                     // logged in successful
-
                     MainActivity.changeLogButtonMessage(false);
                     loggedIn = true;
                     getFacebookIdInBackground(ctx);
+                }else{
+                    Log.d("INFO", "No network");
+                    // show Message to the user to connect to the internet
+                    AlertDialog.Builder builder = new AlertDialog.Builder(logActv);
+                    builder.setMessage("Please Connect Your Device To The Internet!");
+                    builder.setCancelable(false);
+                    builder.setPositiveButton("OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
                 }
             }
         });
     }
-
 
     private static void getFacebookIdInBackground(final Context applicationContext) {
         Request.executeMeRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
@@ -90,12 +103,11 @@ public class UserManagement {
                     ParseUser.getCurrentUser().put("name", user.getName());
                     ParseUser.getCurrentUser().saveInBackground();
 
-
                     ParseInstallation installation = ParseInstallation.getCurrentInstallation();
                     installation.put("fbUserId", Database.currentUserFbId);
                     Database.deviceId = installation.getInstallationId();
+                    Log.d("INFO", "device id ==" + Database.deviceId );
                     installation.saveInBackground();
-
 
                     Request.executeMyFriendsRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserListCallback() {
 
@@ -114,7 +126,6 @@ public class UserManagement {
                                 // facebook IDs are contained in the current user's friend list.
                                 ParseQuery friendQuery = ParseQuery.getUserQuery();
                                 friendQuery.whereContainedIn("fbId", friendsList);
-
                                 // findObjects will return a list of ParseUsers that are friends with
                                 // the current user
                                 try {
@@ -122,7 +133,6 @@ public class UserManagement {
                                     List<ParseObject> friendUsers = friendQuery.find();
                                     Log.d("INFO", "size : " + friendUsers.size());
                                     updateViewsWithProfileInfo(friendUsers, applicationContext);
-
                                 } catch (ParseException e) {
                                     e.printStackTrace();
                                 }
@@ -137,7 +147,6 @@ public class UserManagement {
     private static void updateViewsWithProfileInfo(List<ParseObject> friendUsers,final Context ctx) {
         Log.d("INFO", "profileInfo size = " + friendUsers.size());
         for (ParseObject fr : friendUsers) {
-            // ParseUser currentUser = ParseUser.getCurrentUser();
             ParseUser currentUser = (ParseUser) fr;
             FriendView frView = null;
             Log.d("INFO", "beforeIf");
@@ -156,10 +165,8 @@ public class UserManagement {
             }
             // Set additional UI elements
             Database.addFriend(frView);
-
             Log.d("INFO", "finished");
         }
-//        userFriends.notifyDataChanged();
         MainActivity.notifyFriendsListChange();
     }
 }

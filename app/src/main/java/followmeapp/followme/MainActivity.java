@@ -38,20 +38,6 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /******************************* Connect To Parse ***********************************/
-//        Parse.initialize(this, "nKW5FeyMcsHSazS0HrN07sE2HWnzqZsMkX8smWDV", "wAq9RGWWLdHfbBJKwIKC1it88YKM8lM1S7y6czrG");
-//        ParseInstallation.getCurrentInstallation().saveInBackground();
-        //PushService.setDefaultPushCallback(this, MainActivity.class);
-//        ParsePush.subscribeInBackground("", new SaveCallback() {
-//            @Override
-//            public void done(ParseException e) {
-//                if (e == null) {
-//                    Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
-//                } else {
-//                    Log.e("com.parse.push", "failed to subscribe for push", e);
-//                }
-//            }
-//        });
         /***************************************************************************/
         userFriends = new FriendsFragment();
         userRoutes = new RoutesFragment();

@@ -1,6 +1,7 @@
 package followmeapp.followme;
 
 import android.app.Activity;
+import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -15,6 +16,11 @@ import org.json.JSONObject;
  * Created by salih on 1/17/2015.
  */
 public class RouteReceive extends ParsePushBroadcastReceiver {
+//    @Override
+//    protected Notification getNotification(Context context, Intent intent) {
+//        return super.getNotification(context, intent);
+//    }
+
     @Override
     protected void onPushReceive(Context context, Intent intent) {
         try {

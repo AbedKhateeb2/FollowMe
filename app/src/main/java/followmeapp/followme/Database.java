@@ -77,18 +77,6 @@ public class Database {
         routeObject.put("route_type",routeView.type);
         routeObject.put("route_owner", ParseUser.getCurrentUser().getObjectId());
         routeObject.saveInBackground();
-//        JSONArray routes = ParseUser.getCurrentUser().getJSONArray("Routes");
-//        if (routes ==null){
-//            routes = new JSONArray();
-//            routes.put(routeObject.getObjectId());
-//        }else{
-//            routes.put(routeObject.getObjectId());
-//        }
-//        Log.d("routeID",routeObject.getObjectId());
-//        Log.d("jsonArray",routes.toString());
-//        ParseUser.getCurrentUser().put("Routes",routes);
-//        ParseUser.getCurrentUser().saveInBackground();
-//        routeList.add(routeView);
     }
     public static void addFriend(FriendView fr){ friendsList.add(fr);}
 

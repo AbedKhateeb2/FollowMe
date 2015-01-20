@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-
 public class AddRouteDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,7 +59,6 @@ public class AddRouteDialog extends DialogFragment {
                 }
             }
         });
-
         cancelbutton.setOnClickListener(new View.OnClickListener() {
 
             @Override
