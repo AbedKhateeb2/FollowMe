@@ -14,7 +14,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
  */
 public class Route {
     static PolylineOptions polylineOptions=new PolylineOptions();
-    static boolean routing_mode=false;
+    static boolean routing_mode = false;
     static LatLng lastPoint =null;
     static double distance = 0.0;
     static long time =0;

@@ -1,6 +1,7 @@
 package followmeapp.followme;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,10 @@ public class FriendsListAdapter extends BaseAdapter {
             fHolder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Database.friendsList.get(position).checked = isChecked;
+//                    Log.d("CHECK","-->"+isChecked);
+//                    Database.friendsList.get(position).checked = isChecked;
+                    int getPosition = (Integer)buttonView.getTag();
+                    Database.friendsList.get(position).checked = buttonView.isChecked();
                 }
             });
             view.setTag(fHolder);
@@ -59,13 +63,14 @@ public class FriendsListAdapter extends BaseAdapter {
             view = convertView;
             fHolder = (FriendItemViewHolder)view.getTag();
         }
+        fHolder.check.setTag(position);
         //assign values to the view
         fHolder.friendName.setText(Database.getFriends(position).name);
         fHolder.friendPic.setProfileId(Database.getFriends(position).fbId);
         fHolder.check.setVisibility(CheckBox.INVISIBLE);
         if(Database.fromShare){
             fHolder.check.setVisibility(CheckBox.VISIBLE);
-            fHolder.check.setChecked(false);
+            fHolder.check.setChecked(Database.getFriends(position).checked);
         }
         return view;
     }

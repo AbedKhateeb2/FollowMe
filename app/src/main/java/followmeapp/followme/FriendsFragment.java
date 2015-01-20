@@ -54,7 +54,6 @@ public class FriendsFragment extends Fragment {
                     if(frv.checked){
                         Database.sendTo.add(frv.fbId);
                         Log.d("PUSH","SendToId"+frv.fbId);
-
                     }
                 }
                 Log.d("PUSH","currenUserId"+Database.currentUserFbId);
@@ -65,7 +64,8 @@ public class FriendsFragment extends Fragment {
                     pushQuery.whereEqualTo("fbUserId", recFbId);
 
                     try {
-                        JSONObject data = new JSONObject("{\"alert\": \"You've got a new Route from "+Database.currentUserName+"\",\"route_id\": \""+Database.sendRouteId+"\"}");
+                        //"alert": "You've got a new Route from "+Database.currentUserName+"",
+                        JSONObject data = new JSONObject("{\"alert\": \"You've got a new Route from "+Database.currentUserName+"\",\"title\": \"Follow Me\",\"route_id\": \""+Database.sendRouteId+"\"}");
                         // Send push notification to query
                         ParsePush push = new ParsePush();
                         push.setQuery(pushQuery); // Set our Installation query
@@ -77,20 +77,6 @@ public class FriendsFragment extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-
-
-//                    var query = new Parse.Query(Parse.Installation);
-//                    query.equalTo('gender', 'male');
-//                    query.greaterThanOrEqualTo('age', 18);
-//
-//                    Parse.Push.send({
-//                            where: query, // Set our Installation query
-//                            data: {
-//                        alert: "A test notification from Parse!"
-//                    }
-//                    });
-
                 }
 //                new SendNotifications().execute(new Database.OnSendData(Database.deviceId, Database.currentUserFbId, Database.sendTo));
                 goToRoutes();

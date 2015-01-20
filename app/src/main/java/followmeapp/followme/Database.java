@@ -1,6 +1,9 @@
 package followmeapp.followme;
 
 
+import android.util.Log;
+
+import com.facebook.widget.LoginButton;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -12,6 +15,7 @@ import java.util.List;
  * Created by abed on 1/9/2015.
  */
 public class Database {
+    static public ReceiveRouteDialog rDialog;
     static public String receivedRouteId;
     static public String sendRouteId;
      static public String currentUserFbId;
@@ -55,8 +59,12 @@ public class Database {
             String imageURL = route.getString("route_image_URL");
             String length = route.getString("route_length");
             String type = route.getString("route_type");
-            String objectID = route.getString("route_owner");
-            routeList.add(routeList.size(),new RouteView(name,imageURL,area,length,duration,type,date,objectID));
+            String objectId = route.getObjectId();//route.getString("objectId");
+            String owner = route.getString("route_owner");
+            //Log.d("OBJ","===>"+objectId);
+
+
+            routeList.add(routeList.size(),new RouteView(name,imageURL,area,length,duration,type,date,owner,objectId));
         }
         if (RoutesFragment.routesListAdapter!=null){
             RoutesFragment.routesListAdapter.notifyDataSetChanged();

@@ -22,8 +22,14 @@ public class RouteReceive extends ParsePushBroadcastReceiver {
 //    }
 
     @Override
-    protected void onPushReceive(Context context, Intent intent) {
-        try {
+    protected int getSmallIconId(Context context, Intent intent) {
+        return R.drawable.ic_launcher;
+    }
+
+
+    @Override
+    protected void onPushOpen(Context context, Intent intent) {
+         try {
             String jsonStr = intent.getExtras().getString("com.parse.Data");
             if(jsonStr == null || jsonStr == ""){
                 Log.d("PUSH","nulll");
@@ -36,37 +42,12 @@ public class RouteReceive extends ParsePushBroadcastReceiver {
 
             Database.receivedRouteId = JObj.getString("route_id");
             Log.d("PUSH","----->>>>>"+Database.receivedRouteId);
-            ReceiveRouteDialog rDialog = new ReceiveRouteDialog();
+            Database.rDialog = new ReceiveRouteDialog();
 
-             rDialog.show(MainActivity.fragmentManager,"Route Receive");
+             Database.rDialog.show(MainActivity.fragmentManager,"New Route Received");
 
         }catch (JSONException e) {
-            e.printStackTrace();
+        e.printStackTrace();
         }
     }
-
-//    @Override
-//    protected void onPushOpen(Context context, Intent intent) {
-//        try {
-//            String jsonStr = intent.getExtras().getString("com.parse.Data");
-//            if(jsonStr == null || jsonStr == ""){
-//                Log.d("PUSH","nulll");
-//            }
-//            JSONObject JObj = new JSONObject(jsonStr);
-//            if(JObj == null ){
-//                Log.d("PUSH","jjjjj");
-//            }
-//            Log.d("PUSH","----->"+jsonStr);
-//
-//            Database.receivedRouteId = JObj.getString("route_id");
-//            Log.d("PUSH","----->>>>>"+Database.receivedRouteId);
-//            ReceiveRouteDialog rDialog = new ReceiveRouteDialog();
-//
-//            rDialog.show(MainActivity.fragmentManager,"Route Receive");
-//
-//        }catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
 }
