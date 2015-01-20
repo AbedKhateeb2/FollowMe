@@ -1,6 +1,7 @@
 package followmeapp.followme;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -54,7 +55,8 @@ public class ImportDataFromDatabase extends AsyncTask<Void, Void, Integer> {
 
     @Override
     protected void onPostExecute(Integer res) {
-        if (res==1 && RoutesFragment.routesListAdapter != null) {
+        Log.d("onPostExecute",""+res);
+        if (RoutesFragment.routesListAdapter != null) {
             RoutesFragment.routesListAdapter.notifyDataSetChanged();
         }
     }

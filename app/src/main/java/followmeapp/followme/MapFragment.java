@@ -54,7 +54,7 @@ public class MapFragment extends Fragment {
     static final String prefixImageURL =
             "https://maps.googleapis.com/maps/api/staticmap?size=400x200&path=weight:5%7Ccolor:blue%7Cenc:";
     private static TextView distanceView;
-    private static LocationManager locationManager;
+    public static LocationManager locationManager;
     MapView mMapView;
     private static DecimalFormat df = new DecimalFormat("####0.00");
 
@@ -66,10 +66,12 @@ public class MapFragment extends Fragment {
     Animation slide_up;
     static Animation slide_down;
     private static MapFragment instance = null;
-    private static Chronometer mChronometer;
+    static Chronometer mChronometer;
     private static ImageButton button;
-    private static LocationListener listener;
+    public static LocationListener listener;
     static long timeElapsed = 0;
+    private TextView speedView;
+    private TextView speedTextView;
 
     /**
      * *******************************************************************
@@ -172,14 +174,15 @@ public class MapFragment extends Fragment {
         String date = sdf.format(new Date());
         try {
             getAddress.get();
-            address = Route.address;
+            if (!Route.address.startsWith("Exception")) {
+                address = Route.address;
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
         Database.addRoute(new RouteView(name, imageURL, address, length, duration, type, date, ParseUser.getCurrentUser().getObjectId(), null));
-
     }
 
     private static String encodeList(List<LatLng> points) {
@@ -222,7 +225,8 @@ public class MapFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main, container,
                 false);
-        final TextView speedView = (TextView) v.findViewById(R.id.textView5);
+        speedTextView = (TextView) v.findViewById(R.id.textView4);
+        speedView = (TextView) v.findViewById(R.id.textView5);
         distanceView = (TextView) v.findViewById(R.id.textView6);
         mChronometer = (Chronometer) v.findViewById(R.id.chronometer);
         mMapView = (MapView) v.findViewById(R.id.mapView);
@@ -237,10 +241,11 @@ public class MapFragment extends Fragment {
                 LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLocation, ZOOM_IN_DEFAULT);
                 googleMap.animateCamera(cameraUpdate);
-                if (Route.is_started() && location.getAccuracy() <= 10) {
+                timeElapsed = SystemClock.elapsedRealtime() - mChronometer.getBase();
+                speedView.setText(" " + location.getSpeed() + " m/s");
+                if (Route.is_started() && location.getAccuracy() <= 5) {
                     double total_distance = Route.add_point(currentLocation);
                     googleMap.clear();
-                    Route.time = mChronometer.getBase();
                     googleMap.addPolyline(Route.polylineOptions);
                     distanceView.setText(" " + df.format(total_distance) + " km");
                     speedView.setText(" " + location.getSpeed() + " m/s");
@@ -271,6 +276,7 @@ public class MapFragment extends Fragment {
                 if (!Route.is_started()) {
                     Route.start_routing();
                     mChronometer.setBase(SystemClock.elapsedRealtime());
+                    timeElapsed = 0;
                     mChronometer.start();
                     button.setImageResource(R.drawable.record_icon);
                     information.setVisibility(View.VISIBLE);
@@ -278,7 +284,6 @@ public class MapFragment extends Fragment {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
                     locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
                 } else {
-
                     Route.stop_routing();
                     mChronometer.stop();
                     timeElapsed = SystemClock.elapsedRealtime() - mChronometer.getBase();
@@ -330,13 +335,43 @@ public class MapFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
+
         if (Database.loadRoute) {
             Database.loadRoute = false;
+            //button.setImageResource(R.drawable.record_icon);
+            information.setVisibility(View.VISIBLE);
+            information.startAnimation(slide_down);
+            mChronometer.setBase(SystemClock.elapsedRealtime() - (Route.time));
+            mChronometer.setFormat("HH:MM:SS");
+            distanceView.setText(" " + Route.distance + " km");
             googleMap.addPolyline(Route.polylineOptions);
+
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(Route.polylineOptions.getPoints().get(0)).zoom(ZOOM_IN_DEFAULT).build();
             googleMap.animateCamera(CameraUpdateFactory
                     .newCameraPosition(cameraPosition));
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
+            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
+        }
+        if (Route.is_started()){
+            googleMap.addPolyline(Route.polylineOptions);
+            List<LatLng> points = Route.polylineOptions.getPoints();
+            if (points!=null && points.size()>0) {
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(points.get(points.size() - 1)).zoom(ZOOM_IN_DEFAULT).build();
+                googleMap.animateCamera(CameraUpdateFactory
+                        .newCameraPosition(cameraPosition));
+            }
+
+            mChronometer.setBase(SystemClock.elapsedRealtime()-timeElapsed);
+            Log.d("time",""+timeElapsed);
+            mChronometer.start();
+            button.setImageResource(R.drawable.record_icon);
+            information.setVisibility(View.VISIBLE);
+            information.startAnimation(slide_down);
+            mChronometer.start();
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
+            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
         }
         
     }

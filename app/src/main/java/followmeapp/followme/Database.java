@@ -58,7 +58,7 @@ public class Database {
         routeObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if (e!=null){
+                if (e==null){
                     update_routes();
                 }
             }
