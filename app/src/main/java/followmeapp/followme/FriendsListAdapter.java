@@ -7,11 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.facebook.widget.ProfilePictureView;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by salih on 1/5/2015.
@@ -45,7 +44,8 @@ public class FriendsListAdapter extends BaseAdapter {
             //create view holder
             fHolder = new FriendItemViewHolder();
             fHolder.friendName = (TextView)convertView.findViewById(R.id.friend_name);
-            fHolder.friendPic = (ProfilePictureView)convertView.findViewById(R.id.friend_picture);
+//            fHolder.friendPic = (ProfilePictureView)convertView.findViewById(R.id.friend_picture);
+            fHolder.friendPic = (ImageView)convertView.findViewById(R.id.friend_picture);
             fHolder.check = (CheckBox)convertView.findViewById(R.id.check_box);
             convertView.setTag(fHolder);
         }else{
@@ -57,7 +57,16 @@ public class FriendsListAdapter extends BaseAdapter {
 //        fHolder.check.setTag(position);
         //assign values to the view
         fHolder.friendName.setText(Database.getFriends(position).name);
-        fHolder.friendPic.setProfileId(Database.getFriends(position).fbId);
+//        fHolder.friendPic.setProfileId(Database.getFriends(position).fbId);
+        //use picasso
+        //https://graph.facebook.com/10153059665372608/picture
+        Log.d("PIC","https://graph.facebook.com/"+Database.friendsList.get(position).fbId+"/picture");
+        Picasso.with(ctx)
+                .load("https://graph.facebook.com/"+Database.friendsList.get(position).fbId+"/picture")
+                .placeholder(R.drawable.default_portrait)
+                .error(R.drawable.default_portrait)
+                .into(fHolder.friendPic);
+
         fHolder.check.setVisibility(CheckBox.INVISIBLE);
         if(Database.fromShare){
             fHolder.check.setVisibility(CheckBox.VISIBLE);
@@ -66,12 +75,13 @@ public class FriendsListAdapter extends BaseAdapter {
         fHolder.check.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(((CheckBox)v).isChecked()){
-                    Database.friendsList.get(position).checked = true;
-
-                }else{
-                    Database.friendsList.get(position).checked = false;
-                }
+                Database.friendsList.get(position).checked = ((CheckBox)v).isChecked();
+//                if(((CheckBox)v).isChecked()){
+//                    Database.friendsList.get(position).checked = true;
+//
+//                }else{
+//                    Database.friendsList.get(position).checked = false;
+//                }
             }
         });
         return convertView;
