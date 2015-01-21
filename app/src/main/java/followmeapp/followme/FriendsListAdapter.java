@@ -76,12 +76,6 @@ public class FriendsListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 Database.friendsList.get(position).checked = ((CheckBox)v).isChecked();
-//                if(((CheckBox)v).isChecked()){
-//                    Database.friendsList.get(position).checked = true;
-//
-//                }else{
-//                    Database.friendsList.get(position).checked = false;
-//                }
             }
         });
         return convertView;

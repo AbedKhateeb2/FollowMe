@@ -42,16 +42,21 @@ public class FriendsFragment extends Fragment {
         cancelB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                for(FriendView f : Database.friendsList){
+                    f.checked = false;
+                }
                 goToRoutes();
             }
         });
         sendB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // count the checked friends and prepare the list of fbIds that we want to send
-                // the route to them
+                // send the routes in back ground
+
+               // new SendNotifications().execute();
                 for(FriendView frv : Database.friendsList ){
                     if(frv.checked){
+                        frv.checked = false;// return to unchecked
                         Database.sendTo.add(frv.fbId);
                         Log.d("PUSH","SendToId"+frv.fbId);
                     }
@@ -62,22 +67,17 @@ public class FriendsFragment extends Fragment {
                     // Create our Installation query
                     ParseQuery pushQuery = ParseInstallation.getQuery();
                     pushQuery.whereEqualTo("fbUserId", recFbId);
-
                     try {
                         JSONObject data = new JSONObject("{\"alert\": \"You've got a new Route from "+Database.currentUserName+"\",\"title\": \"Follow Me\",\"route_id\": \""+Database.sendRouteId+"\"}");
-                        // Send push notification to query
+//                    Send push notification to query
                         ParsePush push = new ParsePush();
-                        push.setQuery(pushQuery); // Set our Installation query
-//                        push.setMessage("You've got a new Route from " + Database.currentUserName);
                         push.setData(data);
                         push.sendInBackground();
-//                        JSONObject JObj = new JSONObject("{\"route_id\": \""+Database.sendRouteId+"\"}");
-//                        Log.d("JSON","{\"route_id\": \""+Database.sendRouteId+"\"}"+"------"+JObj.get("route_id"));
+//                    SystemClock.sleep(500);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-//                new SendNotifications().execute(new Database.OnSendData(Database.deviceId, Database.currentUserFbId, Database.sendTo));
                 goToRoutes();
             }
         });

@@ -3,6 +3,8 @@ package followmeapp.followme;
 import java.lang.CharSequence;import java.lang.Override;import java.lang.String;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -26,12 +28,14 @@ public class MainActivity extends ActionBarActivity
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
-    public static NavigationDrawerFragment mNavigationDrawerFragment;
-
+    static NavigationDrawerFragment mNavigationDrawerFragment;
+    static ProgressDialog pd;
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+
+    static Context thisContext = null;
     static FragmentManager fragmentManager = null;
     UserManagement loginObj = null;
     @Override
@@ -51,9 +55,21 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+        thisContext = MainActivity.this;
         /***************** Last to do ******************/
         loginObj = new UserManagement(getApplicationContext(),this);
     }
+    static void showProgressDialog(){
+        pd = ProgressDialog.show(thisContext,"","Sending Routes...");
+    }
+
+    static void closeProgressDialog(){
+        if(pd.isShowing()){
+            pd.dismiss();
+        }
+
+    }
+
 
     static void lockNavigationDrawer(){
         mNavigationDrawerFragment.setMenuVisibility(false);
