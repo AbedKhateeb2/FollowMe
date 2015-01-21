@@ -17,6 +17,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.google.android.gms.maps.model.PolylineOptions;
+
 public class AddRouteDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,6 +57,7 @@ public class AddRouteDialog extends DialogFragment {
                     alert11.show();
                 }else{
                     MapFragment.addRouteToDatabase(name.getText().toString(),spinner.getSelectedItem().toString(),getAddress,getActivity());
+                    MapFragment.googleMap.addPolyline(new PolylineOptions());
                     AddRouteDialog.this.dismiss();
                 }
             }
@@ -66,6 +69,7 @@ public class AddRouteDialog extends DialogFragment {
                 AddRouteDialog.this.dismiss();
             }
         });
+        MapFragment.googleMap.addPolyline(new PolylineOptions());
         return view;
     }
 

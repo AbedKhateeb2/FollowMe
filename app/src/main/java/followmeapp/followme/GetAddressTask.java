@@ -44,11 +44,11 @@ public class GetAddressTask extends AsyncTask<LatLng, Void, String> {
             addresses = geocoder.getFromLocation(loc.latitude,
                     loc.longitude, 1);
         } catch (IOException e1) {
-            Route.address = "IO Exception trying to get address";
+            Route.address = "Exception IO trying to get address";
             return ("IO Exception trying to get address");
         } catch (IllegalArgumentException e2) {
             // Error message to post in the log
-            String errorString = "Illegal arguments " +
+            String errorString = "Exception Illegal arguments " +
                     Double.toString(loc.latitude) +
                     " , " +
                     Double.toString(loc.longitude) +

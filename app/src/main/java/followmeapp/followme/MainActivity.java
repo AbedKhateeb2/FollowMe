@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -149,7 +150,12 @@ public class MainActivity extends ActionBarActivity
 //            Bundle args = new Bundle();
 //            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 //            fragment.setArguments(args);
-
+            if (MapFragment.locationManager != null) {
+                MapFragment.locationManager.removeUpdates(MapFragment.listener);
+            }
+            if (MapFragment.mChronometer!=null ){
+                MapFragment.mChronometer.stop();
+            }
             switch(sectionNumber){
                 case 1:
                     MapFragment res = MapFragment.newInstance(null,null);

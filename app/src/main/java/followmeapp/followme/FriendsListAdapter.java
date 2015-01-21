@@ -60,9 +60,9 @@ public class FriendsListAdapter extends BaseAdapter {
 //        fHolder.friendPic.setProfileId(Database.getFriends(position).fbId);
         //use picasso
         //https://graph.facebook.com/10153059665372608/picture
-        Log.d("PIC","https://graph.facebook.com/"+Database.friendsList.get(position).fbId+"/picture");
+        Log.d("PIC","https://graph.facebook.com/"+Database.friendsList.get(position).fbId+"/picture?height=200&width=200");
         Picasso.with(ctx)
-                .load("https://graph.facebook.com/"+Database.friendsList.get(position).fbId+"/picture")
+                .load("https://graph.facebook.com/"+Database.friendsList.get(position).fbId+"/picture?height=200&width=200")
                 .transform(new CircleTransform())
                 .placeholder(R.drawable.default_portrait)
                 .error(R.drawable.default_portrait)

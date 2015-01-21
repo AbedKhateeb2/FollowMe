@@ -40,11 +40,11 @@ public class RouteReceive extends ParsePushBroadcastReceiver {
             }
             Log.d("PUSH","----->"+jsonStr);
 
-            Database.receivedRouteId = JObj.getString("route_id");
-            Log.d("PUSH","----->>>>>"+Database.receivedRouteId);
-            Database.rDialog = new ReceiveRouteDialog();
-
-             Database.rDialog.show(MainActivity.fragmentManager,"New Route Received");
+            String routeID = JObj.getString("route_id");
+            Log.d("PUSH","----->>>>>"+routeID);
+            ReceiveRouteDialog rDialog = new ReceiveRouteDialog();
+            rDialog.setRouteId(routeID);
+            rDialog.show(MainActivity.fragmentManager,"New Route Received");
 
         }catch (JSONException e) {
         e.printStackTrace();
