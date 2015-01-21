@@ -21,8 +21,13 @@ import org.json.JSONObject;
 public class SendNotifications extends AsyncTask<Void,Void,Void> {
     private ProgressDialog dialog;
     private Context context;
+
+    SendNotifications(Context ctx){
+        context = ctx;
+    }
     @Override
     protected void onPreExecute() {
+        dialog = ProgressDialog.show(context,"","Sending Route...");
 //        MainActivity.showProgressDialog();
     }
 
@@ -47,10 +52,10 @@ public class SendNotifications extends AsyncTask<Void,Void,Void> {
                 try {
                     JSONObject data = new JSONObject("{\"alert\": \"You've got a new Route from "+Database.currentUserName+"\",\"title\": \"Follow Me\",\"route_id\": \""+Database.sendRouteId+"\"}");
 //                    Send push notification to query
-                    ParsePush push = new ParsePush();
-                    push.setData(data);
-                   push.sendInBackground();
-//                    SystemClock.sleep(500);
+//                    ParsePush push = new ParsePush();
+//                    push.setData(data);
+//                   push.sendInBackground();
+                    SystemClock.sleep(500);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -60,6 +65,7 @@ public class SendNotifications extends AsyncTask<Void,Void,Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
+        dialog.dismiss();
 //        MainActivity.closeProgressDialog();
         Log.d("PUSH", "Finished push");
     }

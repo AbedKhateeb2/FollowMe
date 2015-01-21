@@ -2,6 +2,7 @@ package followmeapp.followme;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
@@ -28,6 +29,7 @@ import java.util.List;
 public class UserManagement {
     private boolean loggedIn;
     private Context ctx;
+    private ProgressDialog dialog;
     private Activity logActv;
     UserManagement(Context context, Activity actv){
         ctx = context;
@@ -61,10 +63,10 @@ public class UserManagement {
 
     void logIn() {
         List<String> permissions = Arrays.asList("public_profile", "user_friends");
-
         ParseFacebookUtils.logIn(permissions,logActv, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException error) {
+                dialog = ProgressDialog.show(logActv,"","Loading Data...");
                 Log.d("INFO", "in done");
                 // When your user logs in, immediately get and store its Facebook ID
                 if (user != null) {
@@ -91,7 +93,7 @@ public class UserManagement {
         });
     }
 
-    private static void getFacebookIdInBackground(final Context applicationContext) {
+    private void getFacebookIdInBackground(final Context applicationContext) {
         Request.executeMeRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
             @Override
             public void onCompleted(GraphUser user, Response response) {
@@ -137,11 +139,15 @@ public class UserManagement {
                                     e.printStackTrace();
                                 }
                             }
+                            if(dialog.isShowing()){
+                                dialog.dismiss();
+                            }
                         }
                     });
                 }
             }
         });
+
     }
 
     private static void updateViewsWithProfileInfo(List<ParseObject> friendUsers,final Context ctx) {
