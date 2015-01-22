@@ -239,22 +239,22 @@ public class MapFragment extends Fragment {
             @Override
             public void onLocationChanged(Location location) {
                 LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                if (Route.lastPoint != null){
+                if (Route.lastPoint != null&&location.getAccuracy() <= 8){
                     float[] results = new float[1];
                     Location.distanceBetween(Route.lastPoint.latitude,Route.lastPoint.longitude,currentLocation.latitude,currentLocation.longitude,results);
                     distanceView.setText(" " + df.format(results[0]/1000) + " km");
+                    speedView.setText(" " + location.getSpeed() + " m/s");
                 }
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLocation, ZOOM_IN_DEFAULT);
                 googleMap.animateCamera(cameraUpdate);
                 timeElapsed = SystemClock.elapsedRealtime() - mChronometer.getBase();
-                speedView.setText(" " + location.getSpeed() + " m/s");
                 Route.lastPoint = currentLocation;
-                if (Route.is_started() && location.getAccuracy() <= 5) {
-                    double total_distance = Route.add_point(currentLocation);
+                if (Route.is_started() && location.getAccuracy() <= 8) {
+                    Route.add_point(currentLocation);
                     googleMap.clear();
                     googleMap.addPolyline(Route.polylineOptions);
-                    distanceView.setText(" " + df.format(total_distance) + " km");
-                    speedView.setText(" " + location.getSpeed() + " m/s");
+//                    distanceView.setText(" " + df.format(total_distance) + " km");
+//                    speedView.setText(" " + location.getSpeed() + " m/s");
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
                     locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
                 }
