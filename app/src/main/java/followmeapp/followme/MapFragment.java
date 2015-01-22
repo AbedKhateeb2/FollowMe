@@ -446,11 +446,11 @@ public class MapFragment extends Fragment {
                         .newCameraPosition(cameraPosition));
             }
             MapFragment.clearButton.setVisibility(View.GONE);
-            Log.d("time",""+timeElapsed);
             mChronometer.start();
             button.setImageResource(R.drawable.record_icon);
             information.setVisibility(View.VISIBLE);
             information.startAnimation(slide_down);
+            distanceView.setText(" "+Route.distance+ " km");
             mChronometer.start();
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
             locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATE, MINIMUM_DISTANCECHANGE_FOR_UPDATE, listener);
