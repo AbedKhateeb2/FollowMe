@@ -2,6 +2,7 @@ package followmeapp.followme;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
@@ -15,6 +16,7 @@ import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -28,6 +30,7 @@ import java.util.List;
 public class UserManagement {
     private boolean loggedIn;
     private Context ctx;
+    private ProgressDialog dialog;
     private Activity logActv;
     UserManagement(Context context, Activity actv){
         ctx = context;
@@ -45,6 +48,7 @@ public class UserManagement {
     }
 
     public void logOut(){
+        ParsePush.unsubscribeInBackground("a" + Database.currentUserFbId);
         MainActivity.changeLogButtonMessage(true);
         ParseUser.logOut();
         Session fbs = Session.getActiveSession();
@@ -61,14 +65,15 @@ public class UserManagement {
 
     void logIn() {
         List<String> permissions = Arrays.asList("public_profile", "user_friends");
-
         ParseFacebookUtils.logIn(permissions,logActv, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException error) {
+
                 Log.d("INFO", "in done");
                 // When your user logs in, immediately get and store its Facebook ID
                 if (user != null) {
-                    // logged in successful
+                    dialog = ProgressDialog.show(logActv,"","Loading Data...");
+                    // logged in successfully
                     MainActivity.changeLogButtonMessage(false);
                     loggedIn = true;
                     getFacebookIdInBackground(ctx);
@@ -91,7 +96,7 @@ public class UserManagement {
         });
     }
 
-    private static void getFacebookIdInBackground(final Context applicationContext) {
+    private void getFacebookIdInBackground(final Context applicationContext) {
         Request.executeMeRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
             @Override
             public void onCompleted(GraphUser user, Response response) {
@@ -105,6 +110,8 @@ public class UserManagement {
 
                     ParseInstallation installation = ParseInstallation.getCurrentInstallation();
                     installation.put("fbUserId", Database.currentUserFbId);
+//                    installation.put("channels","a" + Database.currentUserFbId);
+                    ParsePush.subscribeInBackground("a" + Database.currentUserFbId);
                     Database.deviceId = installation.getInstallationId();
                     Log.d("INFO", "device id ==" + Database.deviceId );
                     installation.saveInBackground();
@@ -137,11 +144,15 @@ public class UserManagement {
                                     e.printStackTrace();
                                 }
                             }
+                            if(dialog.isShowing()){
+                                dialog.dismiss();
+                            }
                         }
                     });
                 }
             }
         });
+
     }
 
     private static void updateViewsWithProfileInfo(List<ParseObject> friendUsers,final Context ctx) {

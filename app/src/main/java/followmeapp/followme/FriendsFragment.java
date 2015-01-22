@@ -53,7 +53,7 @@ public class FriendsFragment extends Fragment {
             public void onClick(View v) {
                 // send the routes in back ground
 
-               // new SendNotifications().execute();
+                 // new SendNotifications(getActivity()).execute();
                 for(FriendView frv : Database.friendsList ){
                     if(frv.checked){
                         frv.checked = false;// return to unchecked
@@ -61,23 +61,37 @@ public class FriendsFragment extends Fragment {
                         Log.d("PUSH","SendToId"+frv.fbId);
                     }
                 }
-                Log.d("PUSH","currenUserId"+Database.currentUserFbId);
+                Log.d("PUSH","currenUserId"+Database.currentUserFbId + "+++++" + Database.sendTo.size());
 
                 for(String recFbId : Database.sendTo){
                     // Create our Installation query
-                    ParseQuery pushQuery = ParseInstallation.getQuery();
-                    pushQuery.whereEqualTo("fbUserId", recFbId);
+//                    ParseQuery pushQuery = ParseInstallation.getQuery();
+//                    pushQuery.whereEqualTo("fbUserId", recFbId);
+//                    try {
+                       // Log.d("JSON","{\"alert\": \"You've got a new Route from "+Database.currentUserName+"\",\"title\": \"Follow Me\",\"route_id\": \""+Database.sendRouteId+"\"}");
+                       // JSONObject data = new JSONObject("{\"alert\": \"You've got a new Route from "+Database.currentUserName+"\",\"title\": \"Follow Me\",\"route_id\": \""+Database.sendRouteId+"\"}");
+//                        ParsePush push = new ParsePush();
+//                        push.setData(data);
+//                        push.setMessage("You've got a new Route from "+Database.currentUserName);
+//                        push.sendInBackground();
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
                     try {
                         JSONObject data = new JSONObject("{\"alert\": \"You've got a new Route from "+Database.currentUserName+"\",\"title\": \"Follow Me\",\"route_id\": \""+Database.sendRouteId+"\"}");
-//                    Send push notification to query
                         ParsePush push = new ParsePush();
+                        push.setChannel("a"+recFbId);
+                        //push.setMessage("You've got a new Route from "+Database.currentUserName);
                         push.setData(data);
                         push.sendInBackground();
-//                    SystemClock.sleep(500);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+
+
+
                 }
+                Database.sendTo.clear();
                 goToRoutes();
             }
         });
