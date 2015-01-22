@@ -16,6 +16,7 @@ import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -47,6 +48,7 @@ public class UserManagement {
     }
 
     public void logOut(){
+        ParsePush.unsubscribeInBackground("a" + Database.currentUserFbId);
         MainActivity.changeLogButtonMessage(true);
         ParseUser.logOut();
         Session fbs = Session.getActiveSession();
@@ -66,11 +68,12 @@ public class UserManagement {
         ParseFacebookUtils.logIn(permissions,logActv, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException error) {
-                dialog = ProgressDialog.show(logActv,"","Loading Data...");
+
                 Log.d("INFO", "in done");
                 // When your user logs in, immediately get and store its Facebook ID
                 if (user != null) {
-                    // logged in successful
+                    dialog = ProgressDialog.show(logActv,"","Loading Data...");
+                    // logged in successfully
                     MainActivity.changeLogButtonMessage(false);
                     loggedIn = true;
                     getFacebookIdInBackground(ctx);
@@ -107,6 +110,8 @@ public class UserManagement {
 
                     ParseInstallation installation = ParseInstallation.getCurrentInstallation();
                     installation.put("fbUserId", Database.currentUserFbId);
+//                    installation.put("channels","a" + Database.currentUserFbId);
+                    ParsePush.subscribeInBackground("a" + Database.currentUserFbId);
                     Database.deviceId = installation.getInstallationId();
                     Log.d("INFO", "device id ==" + Database.deviceId );
                     installation.saveInBackground();

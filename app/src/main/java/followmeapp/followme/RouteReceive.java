@@ -20,12 +20,12 @@ public class RouteReceive extends ParsePushBroadcastReceiver {
 //    protected Notification getNotification(Context context, Intent intent) {
 //        return super.getNotification(context, intent);
 //    }
-
-    @Override
-    protected int getSmallIconId(Context context, Intent intent) {
-        return R.drawable.ic_launcher;
-    }
-
+//
+//    @Override
+//    protected int getSmallIconId(Context context, Intent intent) {
+//        return R.drawable.ic_launcher;
+//    }
+//
 
     @Override
     protected void onPushOpen(Context context, Intent intent) {
@@ -47,7 +47,7 @@ public class RouteReceive extends ParsePushBroadcastReceiver {
             rDialog.show(MainActivity.fragmentManager,"New Route Received");
 
         }catch (JSONException e) {
-        e.printStackTrace();
+            e.printStackTrace();
         }
     }
 }
