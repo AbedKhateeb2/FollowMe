@@ -1,6 +1,7 @@
 package followmeapp.followme;
 
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -102,6 +103,7 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         friendsList = (ListView)getView().findViewById(R.id.friendsListView);
         WeakReference<Context> Mcontext = new WeakReference<Context>(getActivity());
         friendsAdapter = new FriendsListAdapter(Mcontext.get());

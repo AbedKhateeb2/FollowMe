@@ -2,6 +2,7 @@ package followmeapp.followme;
 
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ public class RoutesFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         routesList = (ListView)getView().findViewById(R.id.routesListView);
         WeakReference<Context> Mcontext = new WeakReference<Context>(getActivity());
         FragmentManager fm = getFragmentManager();
