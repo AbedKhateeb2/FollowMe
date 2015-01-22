@@ -7,6 +7,7 @@ import android.os.SystemClock;
 import android.support.v4.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -23,7 +24,8 @@ public class RouteOperationDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final FragmentActivity activity = getActivity();
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setItems(R.array.Operations, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 Log.d("whiche", "" + which);
@@ -46,7 +48,7 @@ public class RouteOperationDialog extends DialogFragment {
                                     RoutesFragment.routesListAdapter.notifyDataSetChanged();
                                     ParseObject.createWithoutData("Route", objectID).deleteInBackground();
                                     dialog.cancel();
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                                     builder.setMessage("The Route had been Deleted");
                                     builder.setCancelable(false);
                                     builder.setPositiveButton("OK",
