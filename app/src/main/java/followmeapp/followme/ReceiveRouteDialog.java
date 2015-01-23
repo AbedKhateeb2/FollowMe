@@ -59,6 +59,7 @@ public class ReceiveRouteDialog extends DialogFragment {
     public void setRouteId(String id) {
         this.routeId=id;
     }
+
     public class  SaveRoute extends AsyncTask<Void,Void,RouteView>{
         private final String routeId;
         private final String routeName;

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.SystemClock;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -61,33 +62,33 @@ public class MainActivity extends ActionBarActivity
         /***************** Last to do ******************/
         loginObj = new UserManagement(getApplicationContext(),this);
         fragmentManager = getSupportFragmentManager();
-        Intent intent = getIntent();
-        if(intent == null){
-            Log.d("INTENT","nullllll");
-        }else{
-//            Log.d("INTENT","noooooooo nulll"+nt.toString()+"-->"+nt.getCategories().size());
-            if(intent.getCategories() == null){//from Push
-                try{
-                    String jsonStr = intent.getExtras().getString("com.parse.Data");
-                    if(jsonStr == null || jsonStr == ""){
-                        Log.d("PUSH","nulll");
-                    }
-                    JSONObject JObj = new JSONObject(jsonStr);
-                    if(JObj == null ){
-                        Log.d("PUSH","jjjjj");
-                    }
-                    Log.d("PUSH","----->"+jsonStr);
-
-                    String routeID = JObj.getString("route_id");
-                    Log.d("PUSH","----->>>>>"+routeID);
-                    ReceiveRouteDialog rDialog = new ReceiveRouteDialog();
-                    rDialog.setRouteId(routeID);
-                    rDialog.show(MainActivity.fragmentManager,"New Route Received");
-                }catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+//        Intent intent = getIntent();
+//        if(intent == null){
+//            Log.d("INTENT","nullllll");
+//        }else{
+////            Log.d("INTENT","noooooooo nulll"+nt.toString()+"-->"+nt.getCategories().size());
+//            if(intent.getCategories() == null){//from Push
+//                try{
+//                    String jsonStr = intent.getExtras().getString("com.parse.Data");
+//                    if(jsonStr == null || jsonStr == ""){
+//                        Log.d("PUSH","nulll");
+//                    }
+//                    JSONObject JObj = new JSONObject(jsonStr);
+//                    if(JObj == null ){
+//                        Log.d("PUSH","jjjjj");
+//                    }
+//                    Log.d("PUSH","----->"+jsonStr);
+//
+//                    String routeID = JObj.getString("route_id");
+//                    Log.d("PUSH","----->>>>>"+routeID);
+//                    ReceiveRouteDialog rDialog = new ReceiveRouteDialog();
+//                    rDialog.setRouteId(routeID);
+//                    rDialog.show(MainActivity.fragmentManager,"New Route Received");
+//                }catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
     }
 
     static void lockNavigationDrawer(){
@@ -227,11 +228,13 @@ public class MainActivity extends ActionBarActivity
             Log.d("INTENT","nullllll");
         }else{
 //            Log.d("INTENT","noooooooo nulll"+nt.toString()+"-->"+nt.getCategories().size());
-            if(intent.getCategories() == null){//from Push
+            if( intent.getExtras() != null){//from Push
                 try{
-                    String jsonStr = intent.getExtras().getString("com.parse.Data");
+                    Bundle ext = intent.getExtras();
+                    String jsonStr = ext.getString("com.parse.Data");
                     if(jsonStr == null || jsonStr == ""){
                         Log.d("PUSH","nulll");
+                        return ;
                     }
                     JSONObject JObj = new JSONObject(jsonStr);
                     if(JObj == null ){
@@ -244,12 +247,16 @@ public class MainActivity extends ActionBarActivity
                     ReceiveRouteDialog rDialog = new ReceiveRouteDialog();
                     rDialog.setRouteId(routeID);
                     rDialog.show(MainActivity.fragmentManager,"New Route Received");
+                    getIntent().removeExtra("com.parse.Data");
+//                    ext.remove("com.parse.Data");
                 }catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         }
     }
+
+
 
 
 }

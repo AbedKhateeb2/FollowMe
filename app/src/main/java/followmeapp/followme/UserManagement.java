@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
 import android.util.Log;
 
 import com.facebook.Request;
@@ -79,18 +80,21 @@ public class UserManagement {
                     getFacebookIdInBackground(ctx);
                 }else{
                     Log.d("INFO", "No network");
-                    // show Message to the user to connect to the internet
-                    AlertDialog.Builder builder = new AlertDialog.Builder(logActv);
-                    builder.setMessage("Please Connect Your Device To The Internet!");
-                    builder.setCancelable(false);
-                    builder.setPositiveButton("OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
-                    AlertDialog alert = builder.create();
-                    alert.show();
+                    if(!isDataConnected()){
+                        // show Message to the user to connect to the internet
+                        AlertDialog.Builder builder = new AlertDialog.Builder(logActv);
+                        builder.setMessage("Please Connect Your Device To The Internet!");
+                        builder.setCancelable(false);
+                        builder.setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+
                 }
             }
         });
@@ -180,4 +184,14 @@ public class UserManagement {
         }
         MainActivity.notifyFriendsListChange();
     }
+
+    private boolean isDataConnected() {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) logActv.getSystemService(Context.CONNECTIVITY_SERVICE);
+            return cm.getActiveNetworkInfo().isConnectedOrConnecting();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }
