@@ -4,6 +4,7 @@ package followmeapp.followme;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,6 +17,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Chronometer;
@@ -71,7 +74,7 @@ public class MapFragment extends Fragment {
     public static LocationListener listener;
     static long timeElapsed = 0;
     private TextView speedView;
-    private TextView speedTextView;
+    static ImageButton clearButton;
 
     /**
      * *******************************************************************
@@ -149,7 +152,6 @@ public class MapFragment extends Fragment {
 //        args.putString("title","Add Route");
         dialog.setArguments(args);
 //        dialog.setRetainInstance(true);
-
         dialog.show(fm, "Adding Route");
     }
 
@@ -225,7 +227,6 @@ public class MapFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main, container,
                 false);
-        speedTextView = (TextView) v.findViewById(R.id.textView4);
         speedView = (TextView) v.findViewById(R.id.textView5);
         distanceView = (TextView) v.findViewById(R.id.textView6);
         mChronometer = (Chronometer) v.findViewById(R.id.chronometer);
@@ -235,6 +236,14 @@ public class MapFragment extends Fragment {
         slide_up = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_up);
         slide_down = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_down);
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        clearButton = (ImageButton) v.findViewById(R.id.clearButton);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearMap(v);
+                MapFragment.clearButton.setVisibility(View.GONE);
+            }
+        });
         listener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -280,6 +289,20 @@ public class MapFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (!Route.is_started()) {
+                    if (ParseUser.getCurrentUser() == null) {
+                        AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+                        builder1.setMessage("Please Login before");
+                        builder1.setCancelable(false);
+                        builder1.setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert11 = builder1.create();
+                        alert11.show();
+                        return;
+                    }
                     Route.start_routing();
                     mChronometer.setBase(SystemClock.elapsedRealtime());
                     timeElapsed = 0;
@@ -338,13 +361,67 @@ public class MapFragment extends Fragment {
         return v;
     }
 
+    private void clearMap(View v) {
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+        builder1.setMessage("Do You want to Clear the map");
+        builder1.setPositiveButton("Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Route.clear();
+                        mChronometer.stop();
+                        googleMap.clear();
+                        googleMap.addPolyline(Route.polylineOptions);
+                        speedView.setText(R.string.empty);
+                        distanceView.setText(R.string.empty);
+                        mChronometer.setText(R.string.empty);
+                        button.setVisibility(View.VISIBLE);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setMessage("The Map had been Cleared");
+                        builder.setCancelable(false);
+                        builder.setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        if (Route.is_started()){
+                                            mChronometer.setBase(SystemClock.elapsedRealtime());
+                                            mChronometer.start();
+                                        }else{
+                                            information.setVisibility(View.GONE);
+                                        }
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                        dialog.cancel();
+                    }
+                });
+        builder1.setNegativeButton("NO",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        timeElapsed = SystemClock.elapsedRealtime()-mChronometer.getBase();
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
     @Override
     public void onStart(){
         super.onStart();
-
+        mChronometer.setBase(SystemClock.elapsedRealtime()-timeElapsed);
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (Database.loadRoute) {
+            clearButton.setVisibility(View.VISIBLE);
             Database.loadRoute = false;
-            //button.setImageResource(R.drawable.record_icon);
+            button.setVisibility(View.GONE);
             information.setVisibility(View.VISIBLE);
             information.startAnimation(slide_down);
             mChronometer.setBase(SystemClock.elapsedRealtime());
@@ -368,8 +445,7 @@ public class MapFragment extends Fragment {
                 googleMap.animateCamera(CameraUpdateFactory
                         .newCameraPosition(cameraPosition));
             }
-
-            mChronometer.setBase(SystemClock.elapsedRealtime()-timeElapsed);
+            MapFragment.clearButton.setVisibility(View.GONE);
             Log.d("time",""+timeElapsed);
             mChronometer.start();
             button.setImageResource(R.drawable.record_icon);

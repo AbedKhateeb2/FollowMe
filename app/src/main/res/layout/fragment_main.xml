@@ -31,7 +31,17 @@ tools:context=".MainActivity$PlaceholderFragment">
         android:theme="@style/AppTheme"
         android:background="@android:color/transparent"
         />
-
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/clearButton"
+            android:layout_gravity="start|bottom"
+            android:src="@drawable/clear"
+            android:scaleType="fitXY"
+            android:theme="@style/AppTheme"
+            android:background="@android:color/transparent"
+            android:visibility="gone"
+            />
     <include
         android:id="@+id/info_frame"
         layout="@layout/information_xml"/>

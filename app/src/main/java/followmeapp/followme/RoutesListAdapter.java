@@ -23,9 +23,11 @@ import java.util.Arrays;
  */
 
 public class RoutesListAdapter extends BaseAdapter {
+    private FragmentManager fragmentManger;
     private Context ctx;
-    RoutesListAdapter(Context c){
+    RoutesListAdapter(Context c,FragmentManager fragmentManager){
         ctx =  c;
+        this.fragmentManger = fragmentManager;
     }
 
     @Override
@@ -42,7 +44,7 @@ public class RoutesListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View view = null;
         RoutesHolder holder;
         if( convertView == null ){
@@ -96,20 +98,22 @@ public class RoutesListAdapter extends BaseAdapter {
                 Route.polylineOptions.addAll(points);
                 Route.polylineOptions.color(Color.rgb(65, 105, 225)).width(10).visible(true);
                 Database.loadRoute = true;
-                Route.distance = Double.parseDouble(routeView.length);
-                Route.time=0;
-                String[] splited = routeView.duration.split(":");
-                for (int i=0;i<splited.length;++i){
-                    double time = Double.parseDouble(splited[i]);
-                    Route.time+=time;
-                    Route.time*=60;
-                }
-                Route.time*=1000;
+                MapFragment.timeElapsed=0;
                 //MainActivity.lockNavigationDrawer();
                 MainActivity.fragmentManager.beginTransaction()
                         .replace(R.id.container, MainActivity.PlaceholderFragment.newInstance(1))
                         .commit();
 
+            }
+        });
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                RouteOperationDialog dialog = new RouteOperationDialog();
+                dialog.v = v;
+                dialog.position = position;
+                dialog.show(fragmentManger,"");
+                return false;
             }
         });
         Picasso.with(ctx)

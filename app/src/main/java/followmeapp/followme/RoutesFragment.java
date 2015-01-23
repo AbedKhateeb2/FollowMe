@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.widget.ListView;
 
 
@@ -33,7 +34,8 @@ public class RoutesFragment extends Fragment {
         super.onStart();
         routesList = (ListView)getView().findViewById(R.id.routesListView);
         WeakReference<Context> Mcontext = new WeakReference<Context>(getActivity());
-        routesListAdapter = new RoutesListAdapter(Mcontext.get());
+        FragmentManager fm = getFragmentManager();
+        routesListAdapter = new RoutesListAdapter(Mcontext.get(),fm);
         routesList.setAdapter(routesListAdapter);
     }
 
