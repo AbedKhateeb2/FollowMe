@@ -36,6 +36,8 @@ public class ReceiveRouteDialog extends DialogFragment {
         final Button acceptButton = (Button) view.findViewById(R.id.btn_accept);
         Button rejectButton = (Button) view.findViewById(R.id.btn_reject);
         final EditText name = (EditText) view.findViewById(R.id.route_name_pushed);
+        getDialog().setTitle(R.string.new_notification);
+
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

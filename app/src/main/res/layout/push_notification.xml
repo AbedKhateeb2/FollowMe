@@ -4,22 +4,12 @@
     android:layout_height="match_parent"
     android:weightSum="1">
 
-    <TextView
-        android:id='@+id/activity_textView_notification'
-        android:layout_width='fill_parent'
-        android:layout_height='wrap_content'
-        android:paddingTop="10dp"
-        android:textSize="20sp"
-        android:text="@string/new_notification"
-        android:singleLine='true' >
-    </TextView>
-
     <EditText
         android:layout_marginTop="10dp"
         android:id='@+id/route_name_pushed'
         android:layout_width="match_parent"
         android:layout_height='wrap_content'
-        android:hint='@string/dialog_route_name'
+        android:hint='@string/change_name'
         android:singleLine='true'>
         <requestFocus />
     </EditText>

@@ -1,6 +1,7 @@
 package followmeapp.followme;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import com.parse.Parse;
@@ -15,6 +16,17 @@ import com.parse.SaveCallback;
  */
 public class PushAux extends Application {
 
+
+//    private static PushAux instance = new PushAux();
+//
+//    public PushAux() {
+//        instance = this;
+//    }
+//
+//    public static Context getContext() {
+//        return instance;
+//    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -22,7 +34,7 @@ public class PushAux extends Application {
         Parse.initialize(this, "nKW5FeyMcsHSazS0HrN07sE2HWnzqZsMkX8smWDV", "wAq9RGWWLdHfbBJKwIKC1it88YKM8lM1S7y6czrG");
         Log.d("PARSE", "Called");
 //        Parse.setLogLevel(Parse.LOG_LEVEL_VERBOSE);
-        //PushService.setDefaultPushCallback(this,MainActivity.class);
+        PushService.setDefaultPushCallback(this,MainActivity.class);
         ParseInstallation.getCurrentInstallation().saveInBackground();
 
         ParsePush.subscribeInBackground("aaaa", new SaveCallback() {
